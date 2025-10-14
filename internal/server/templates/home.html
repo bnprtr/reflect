@@ -5,23 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{.Title}}</title>
     <link rel="stylesheet" href="/static/app.css" />
+    <script src="/static/theme.js"></script>
   </head>
-  <body class="min-h-screen bg-gray-50 text-gray-900">
-    <main class="container mx-auto p-6">
-      <div class="max-w-4xl mx-auto">
-        <h1 class="text-3xl font-bold text-gray-900 mb-8">API Documentation</h1>
-        
-        <p>Services count: {{len .Services}}</p>
-        
-        {{if .Services}}
-          <p>Services found!</p>
-          {{range .Services}}
-            <p>Service: {{.Name}} ({{.FullName}})</p>
-          {{end}}
-        {{else}}
-          <p>No services found</p>
-        {{end}}
-      </div>
-    </main>
+  <body class="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+    {{template "header.html" .}}
+    
+    <div class="flex">
+      {{template "sidebar.html" .}}
+      
+      <main class="flex-1 min-w-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <nav class="breadcrumb mb-6">
+            <a href="/">Home</a>
+          </nav>
+          
+          <div class="max-w-4xl">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-8">API Documentation</h1>
+            
+            {{if .Services}}
+              <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                  <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Services</h2>
+                </div>
+                <div class="divide-y divide-gray-200 dark:divide-gray-700">
+                  {{range .Services}}
+                    <div class="px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                      <div class="flex items-start justify-between">
+                        <div class="flex-1">
+                          <h3 class="text-lg font-medium text-gray-900 dark:text-white">
+                            <a href="/services/{{.FullName}}" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">
+                              {{.Name}}
+                            </a>
+                          </h3>
+                          <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">{{.FullName}}</p>
+                          {{if .Comment}}
+                            <div class="mt-2 prose prose-sm dark:prose-invert max-w-none">
+                              <p class="text-gray-700 dark:text-gray-300">{{.Comment}}</p>
+                            </div>
+                          {{end}}
+                        </div>
+                      </div>
+                    </div>
+                  {{end}}
+                </div>
+              </div>
+            {{else}}
+              <div class="text-center py-12">
+                <h2 class="text-xl font-medium text-gray-900 dark:text-white mb-2">No services found</h2>
+                <p class="text-gray-600 dark:text-gray-400">Start the server with <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-sm">--proto-root</code> to load protobuf definitions.</p>
+              </div>
+            {{end}}
+          </div>
+        </div>
+      </main>
+    </div>
   </body>
 </html>

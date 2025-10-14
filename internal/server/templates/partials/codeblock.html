@@ -1,0 +1,23 @@
+<div class="code-block">
+  <button class="copy-btn" onclick="copyToClipboard(this)" data-clipboard-text="{{.Code}}">
+    Copy
+  </button>
+  <pre><code>{{.Code}}</code></pre>
+</div>
+
+<script>
+function copyToClipboard(button) {
+  const text = button.getAttribute('data-clipboard-text');
+  navigator.clipboard.writeText(text).then(function() {
+    const originalText = button.textContent;
+    button.textContent = 'Copied!';
+    button.classList.add('bg-green-200', 'dark:bg-green-800');
+    setTimeout(function() {
+      button.textContent = originalText;
+      button.classList.remove('bg-green-200', 'dark:bg-green-800');
+    }, 2000);
+  }).catch(function(err) {
+    console.error('Failed to copy text: ', err);
+  });
+}
+</script>

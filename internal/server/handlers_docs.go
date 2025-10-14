@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/bnprtr/reflect/internal/docs"
 	"github.com/go-chi/chi/v5"
@@ -52,8 +53,10 @@ func (s *Server) handleServiceDetail() http.HandlerFunc {
 		}
 
 		data := map[string]any{
-			"Title":   fmt.Sprintf("Service: %s", serviceView.Name),
-			"Service": serviceView,
+			"Title":          fmt.Sprintf("Service: %s", serviceView.Name),
+			"Service":        serviceView,
+			"Services":       []docs.ServiceSummary{{Name: serviceView.Name, FullName: serviceView.FullName, Package: serviceView.Package, Comment: serviceView.Comment}},
+			"CurrentService": serviceView.FullName,
 		}
 		err = s.templates.ExecuteTemplate(w, "service_detail.html", data)
 		if err != nil {
@@ -77,9 +80,17 @@ func (s *Server) handleMethodDetail() http.HandlerFunc {
 			return
 		}
 
+		// Extract service name from method full name
+		parts := strings.Split(fullName, "/")
+		serviceName := ""
+		if len(parts) >= 2 {
+			serviceName = parts[0]
+		}
+
 		data := map[string]any{
-			"Title":  fmt.Sprintf("Method: %s", methodView.Name),
-			"Method": methodView,
+			"Title":       fmt.Sprintf("Method: %s", methodView.Name),
+			"Method":      methodView,
+			"ServiceName": serviceName,
 		}
 		err = s.templates.ExecuteTemplate(w, "method_detail.html", data)
 		if err != nil {

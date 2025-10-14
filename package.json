@@ -1,0 +1,13 @@
+{
+  "name": "reflect",
+  "version": "1.0.0",
+  "description": "Protobuf documentation server",
+  "scripts": {
+    "build-css": "tailwindcss -i internal/server/static/input.css -o internal/server/static/app.css --minify",
+    "watch-css": "tailwindcss -i internal/server/static/input.css -o internal/server/static/app.css --watch"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0",
+    "@tailwindcss/typography": "^0.5.10"
+  }
+}

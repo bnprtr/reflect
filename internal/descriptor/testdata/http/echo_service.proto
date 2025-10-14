@@ -1,0 +1,93 @@
+syntax = "proto3";
+
+package echo.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "github.com/bnprtr/reflect/internal/descriptor/testdata/http";
+
+// EchoService provides simple echo functionality with HTTP annotations.
+service EchoService {
+  // Echo echoes back the received message.
+  rpc Echo(EchoRequest) returns (EchoResponse) {
+    option (google.api.http) = {
+      post: "/v1/echo"
+      body: "*"
+    };
+  }
+
+  // GetEcho retrieves an echo by ID.
+  rpc GetEcho(GetEchoRequest) returns (EchoResponse) {
+    option (google.api.http) = {
+      get: "/v1/echo/{id}"
+    };
+  }
+
+  // ListEchos lists all echos with pagination.
+  rpc ListEchos(ListEchosRequest) returns (ListEchosResponse) {
+    option (google.api.http) = {
+      get: "/v1/echos"
+    };
+  }
+
+  // UpdateEcho updates an existing echo.
+  rpc UpdateEcho(UpdateEchoRequest) returns (EchoResponse) {
+    option (google.api.http) = {
+      patch: "/v1/echo/{id}"
+      body: "echo"
+    };
+  }
+
+  // DeleteEcho deletes an echo by ID.
+  rpc DeleteEcho(DeleteEchoRequest) returns (DeleteEchoResponse) {
+    option (google.api.http) = {
+      delete: "/v1/echo/{id}"
+    };
+  }
+}
+
+// EchoRequest represents a request to echo a message.
+message EchoRequest {
+  string message = 1;
+  int32 repeat_count = 2;
+}
+
+// EchoResponse represents the response from an echo operation.
+message EchoResponse {
+  string id = 1;
+  string message = 2;
+  int64 timestamp = 3;
+}
+
+// GetEchoRequest represents a request to get an echo by ID.
+message GetEchoRequest {
+  string id = 1;
+}
+
+// ListEchosRequest represents a request to list echos.
+message ListEchosRequest {
+  int32 page_size = 1;
+  string page_token = 2;
+}
+
+// ListEchosResponse represents the response from listing echos.
+message ListEchosResponse {
+  repeated EchoResponse echos = 1;
+  string next_page_token = 2;
+}
+
+// UpdateEchoRequest represents a request to update an echo.
+message UpdateEchoRequest {
+  string id = 1;
+  EchoResponse echo = 2;
+}
+
+// DeleteEchoRequest represents a request to delete an echo.
+message DeleteEchoRequest {
+  string id = 1;
+}
+
+// DeleteEchoResponse represents the response from deleting an echo.
+message DeleteEchoResponse {
+  bool success = 1;
+}

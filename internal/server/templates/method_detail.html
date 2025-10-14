@@ -5,103 +5,177 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{.Title}}</title>
     <link rel="stylesheet" href="/static/app.css" />
+    <script src="/static/theme.js"></script>
   </head>
-  <body class="min-h-screen bg-gray-50 text-gray-900">
-    <main class="container mx-auto p-6">
-  <div class="max-w-4xl mx-auto">
-    <div class="mb-6">
-      <nav class="text-sm text-gray-500 mb-4">
-        <a href="/" class="hover:text-gray-700">← Back to Services</a>
-      </nav>
+  <body class="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+    {{template "header.html" .}}
+    
+    <div class="flex">
+      {{template "sidebar.html" .}}
       
-      <h1 class="text-3xl font-bold text-gray-900">{{.Method.Name}}</h1>
-      <p class="text-lg text-gray-600 mt-2">{{.Method.FullName}}</p>
-      
-      {{if .Method.Deprecated}}
-        <div class="mt-4 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
-          Deprecated
-        </div>
-      {{end}}
-      
-      {{if or .Method.ClientStreaming .Method.ServerStreaming}}
-        <div class="mt-4 flex items-center space-x-2">
-          {{if .Method.ClientStreaming}}
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
-              Client Streaming
-            </span>
-          {{end}}
-          {{if .Method.ServerStreaming}}
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-              Server Streaming
-            </span>
-          {{end}}
-        </div>
-      {{end}}
-      
-      {{if .Method.Comment}}
-        <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-          <p class="text-gray-700">{{.Method.Comment}}</p>
-        </div>
-      {{end}}
-    </div>
+      <main class="flex-1 min-w-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <nav class="breadcrumb mb-6">
+            <a href="/">Home</a>
+            <span>→</span>
+            <a href="/services/{{.ServiceName}}">{{.ServiceName}}</a>
+            <span>→</span>
+            <span>{{.Method.Name}}</span>
+          </nav>
+          
+          <div class="max-w-4xl">
+            <div class="mb-8">
+              <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{.Method.Name}}</h1>
+              <p class="text-lg text-gray-600 dark:text-gray-400 mt-2">{{.Method.FullName}}</p>
+              
+              <div class="mt-4 flex items-center space-x-2">
+                {{if .Method.Deprecated}}
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200">
+                    Deprecated
+                  </span>
+                {{end}}
+                
+                {{if .Method.ClientStreaming}}
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                    Client Streaming
+                  </span>
+                {{end}}
+                
+                {{if .Method.ServerStreaming}}
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                    Server Streaming
+                  </span>
+                {{end}}
+              </div>
+              
+              {{if .Method.Comment}}
+                <div class="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                  <div class="prose prose-sm dark:prose-invert max-w-none">
+                    <p class="text-gray-700 dark:text-gray-300">{{.Method.Comment}}</p>
+                  </div>
+                </div>
+              {{end}}
+            </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h2 class="text-lg font-semibold text-gray-900">Input Type</h2>
-        </div>
-        <div class="px-6 py-4">
-          <a href="/types/{{.Method.InputType}}" class="text-lg font-medium text-blue-600 hover:text-blue-800">
-            {{.Method.InputType}}
-          </a>
-          <div class="mt-2">
-            <button 
-              hx-get="/partial/types/{{.Method.InputType}}" 
-              hx-target="#input-type-details" 
-              hx-swap="innerHTML"
-              class="text-sm text-gray-600 hover:text-gray-800 underline">
-              View Details
-            </button>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+              <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                  <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Input Type</h2>
+                </div>
+                <div class="px-6 py-4">
+                  <a href="/types/{{.Method.InputType}}" class="text-lg font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200">
+                    {{.Method.InputType}}
+                  </a>
+                  <div class="mt-2">
+                    <button 
+                      hx-get="/partial/types/{{.Method.InputType}}" 
+                      hx-target="#input-type-details" 
+                      hx-swap="innerHTML"
+                      class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 underline transition-colors duration-200">
+                      View Details
+                    </button>
+                  </div>
+                  <div id="input-type-details" class="mt-4"></div>
+                </div>
+              </div>
+
+              <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                  <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Output Type</h2>
+                </div>
+                <div class="px-6 py-4">
+                  <a href="/types/{{.Method.OutputType}}" class="text-lg font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200">
+                    {{.Method.OutputType}}
+                  </a>
+                  <div class="mt-2">
+                    <button 
+                      hx-get="/partial/types/{{.Method.OutputType}}" 
+                      hx-target="#output-type-details" 
+                      hx-swap="innerHTML"
+                      class="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 underline transition-colors duration-200">
+                      View Details
+                    </button>
+                  </div>
+                  <div id="output-type-details" class="mt-4"></div>
+                </div>
+              </div>
+            </div>
+
+            {{if .Method.HTTPRules}}
+              <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                  <h2 class="text-lg font-semibold text-gray-900 dark:text-white">HTTP Mappings</h2>
+                </div>
+                <div class="px-6 py-4">
+                  <div class="space-y-3">
+                    {{range .Method.HTTPRules}}
+                      <div class="flex items-center space-x-4 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                          {{.Method}}
+                        </span>
+                        <code class="text-sm text-gray-700 dark:text-gray-300">{{.Path}}</code>
+                        {{if .Body}}
+                          <span class="text-xs text-gray-500 dark:text-gray-400">body: {{.Body}}</span>
+                        {{end}}
+                      </div>
+                    {{end}}
+                  </div>
+                </div>
+              </div>
+            {{end}}
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              {{if .Method.Examples.Curl}}
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                  <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white">cURL Example</h2>
+                  </div>
+                  <div class="px-6 py-4">
+                    <div class="code-block">
+                      <button class="copy-btn" onclick="copyToClipboard(this)" data-clipboard-text="{{.Method.Examples.Curl}}">
+                        Copy
+                      </button>
+                      <pre><code>{{.Method.Examples.Curl}}</code></pre>
+                    </div>
+                  </div>
+                </div>
+              {{end}}
+
+              <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                  <h2 class="text-lg font-semibold text-gray-900 dark:text-white">gRPC Example</h2>
+                </div>
+                <div class="px-6 py-4">
+                  <div class="code-block">
+                    <button class="copy-btn" onclick="copyToClipboard(this)" data-clipboard-text="{{.Method.Examples.Grpcurl}}">
+                      Copy
+                    </button>
+                    <pre><code>{{.Method.Examples.Grpcurl}}</code></pre>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div id="input-type-details" class="mt-4"></div>
         </div>
-      </div>
-
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h2 class="text-lg font-semibold text-gray-900">Output Type</h2>
-        </div>
-        <div class="px-6 py-4">
-          <a href="/types/{{.Method.OutputType}}" class="text-lg font-medium text-blue-600 hover:text-blue-800">
-            {{.Method.OutputType}}
-          </a>
-          <div class="mt-2">
-            <button 
-              hx-get="/partial/types/{{.Method.OutputType}}" 
-              hx-target="#output-type-details" 
-              hx-swap="innerHTML"
-              class="text-sm text-gray-600 hover:text-gray-800 underline">
-              View Details
-            </button>
-          </div>
-          <div id="output-type-details" class="mt-4"></div>
-        </div>
-      </div>
+      </main>
     </div>
 
-    <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200">
-      <div class="px-6 py-4 border-b border-gray-200">
-        <h2 class="text-lg font-semibold text-gray-900">Example Request</h2>
-      </div>
-      <div class="px-6 py-4">
-        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
-          <p class="text-gray-600 text-sm">Example JSON generation will be implemented in the next phase.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
-    </main>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script>
+    function copyToClipboard(button) {
+      const text = button.getAttribute('data-clipboard-text');
+      navigator.clipboard.writeText(text).then(function() {
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        button.classList.add('bg-green-200', 'dark:bg-green-800');
+        setTimeout(function() {
+          button.textContent = originalText;
+          button.classList.remove('bg-green-200', 'dark:bg-green-800');
+        }, 2000);
+      }).catch(function(err) {
+        console.error('Failed to copy text: ', err);
+      });
+    }
+    </script>
   </body>
 </html>

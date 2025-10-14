@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  }
+}
+
+@layer components {
+  .theme-toggle {
+    @apply inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition-colors duration-200;
+  }
+  
+  .code-block {
+    @apply relative bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden;
+  }
+  
+  .code-block pre {
+    @apply p-4 overflow-x-auto text-sm;
+  }
+  
+  .code-block .copy-btn {
+    @apply absolute top-2 right-2 px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200;
+  }
+  
+  .breadcrumb {
+    @apply flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400;
+  }
+  
+  .breadcrumb a {
+    @apply hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-200;
+  }
+  
+  .sidebar {
+    @apply hidden lg:block lg:flex-shrink-0 lg:w-64 lg:pl-8;
+  }
+  
+  .sidebar-nav {
+    @apply space-y-1;
+  }
+  
+  .sidebar-nav a {
+    @apply block px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors duration-200;
+  }
+  
+  .sidebar-nav a.active {
+    @apply bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white;
+  }
+}

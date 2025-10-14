@@ -11,7 +11,7 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-//go:embed templates/*.html templates/partials/*.html
+//go:embed templates/*.html templates/partials/*.html static/*.css static/*.js
 var templatesFS embed.FS
 
 //go:embed static/*

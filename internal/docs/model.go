@@ -25,13 +25,25 @@ type ServiceView struct {
 	Methods                          []MethodSummary
 }
 
+// HTTPRule represents a single HTTP mapping rule.
+type HTTPRule struct {
+	Method string
+	Path   string
+	Body   string
+	Query  string
+}
+
 // MethodSummary represents a method in a service.
 type MethodSummary struct {
 	Name, FullName, Comment          string
 	InputType, OutputType            string
 	ClientStreaming, ServerStreaming bool
 	Deprecated                       bool
-	HTTPPaths                        []string // optional, if present
+	HTTPRules                        []HTTPRule
+	Examples                         struct {
+		Curl    string
+		Grpcurl string
+	}
 }
 
 // MessageView represents a detailed message view.
@@ -142,7 +154,7 @@ func BuildMethodView(reg *descriptor.Registry, fullName string) (*MethodSummary,
 		return nil, fmt.Errorf("method %q not found", fullName)
 	}
 
-	return &MethodSummary{
+	summary := &MethodSummary{
 		Name:            string(method.Name()),
 		FullName:        fullName,
 		Comment:         reg.CommentIndex[fullName],
@@ -151,7 +163,22 @@ func BuildMethodView(reg *descriptor.Registry, fullName string) (*MethodSummary,
 		ClientStreaming: method.IsStreamingClient(),
 		ServerStreaming: method.IsStreamingServer(),
 		Deprecated:      false, // TODO: implement deprecated detection
-	}, nil
+	}
+
+	// Extract HTTP rules
+	httpRules, err := extractHTTPRules(method)
+	if err != nil {
+		// Log error but don't fail - HTTP rules are optional
+		fmt.Printf("Warning: failed to extract HTTP rules for %s: %v\n", fullName, err)
+	} else {
+		summary.HTTPRules = httpRules
+	}
+
+	// Generate examples
+	summary.Examples.Curl = generateCurlExample(summary)
+	summary.Examples.Grpcurl = generateGrpcurlExample(summary)
+
+	return summary, nil
 }
 
 // BuildMessageView creates a message view from the registry.
@@ -265,4 +292,49 @@ func formatOneofName(field protoreflect.FieldDescriptor) string {
 		return string(field.ContainingOneof().Name())
 	}
 	return ""
+}
+
+// extractHTTPRules extracts HTTP rules from a method descriptor.
+func extractHTTPRules(method protoreflect.MethodDescriptor) ([]HTTPRule, error) {
+	// TODO: Implement proper HTTP rule extraction using proto.GetExtension
+	// This requires importing the google.api.annotations package and
+	// properly resolving the extension descriptor.
+	// For now, we'll return empty rules as the extension handling
+	// requires more complex protobuf extension resolution.
+
+	return []HTTPRule{}, nil
+}
+
+// generateCurlExample generates a curl example for the method.
+func generateCurlExample(method *MethodSummary) string {
+	if len(method.HTTPRules) == 0 {
+		return ""
+	}
+
+	rule := method.HTTPRules[0]       // Use first rule
+	host := "https://api.example.com" // Placeholder host
+
+	var curlCmd string
+	switch strings.ToUpper(rule.Method) {
+	case "GET":
+		curlCmd = fmt.Sprintf("curl -X GET %s%s", host, rule.Path)
+	case "POST":
+		curlCmd = fmt.Sprintf("curl -X POST %s%s \\\n  -H \"Content-Type: application/json\" \\\n  -d '{}'", host, rule.Path)
+	case "PUT":
+		curlCmd = fmt.Sprintf("curl -X PUT %s%s \\\n  -H \"Content-Type: application/json\" \\\n  -d '{}'", host, rule.Path)
+	case "PATCH":
+		curlCmd = fmt.Sprintf("curl -X PATCH %s%s \\\n  -H \"Content-Type: application/json\" \\\n  -d '{}'", host, rule.Path)
+	case "DELETE":
+		curlCmd = fmt.Sprintf("curl -X DELETE %s%s", host, rule.Path)
+	default:
+		curlCmd = fmt.Sprintf("curl -X %s %s%s", strings.ToUpper(rule.Method), host, rule.Path)
+	}
+
+	return curlCmd
+}
+
+// generateGrpcurlExample generates a grpcurl example for the method.
+func generateGrpcurlExample(method *MethodSummary) string {
+	host := "localhost:8080" // Placeholder host
+	return fmt.Sprintf("grpcurl -plaintext -d '{}' %s %s", host, method.FullName)
 }

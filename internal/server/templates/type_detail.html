@@ -5,119 +5,135 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{.Title}}</title>
     <link rel="stylesheet" href="/static/app.css" />
+    <script src="/static/theme.js"></script>
   </head>
-  <body class="min-h-screen bg-gray-50 text-gray-900">
-    <main class="container mx-auto p-6">
-  <div class="max-w-4xl mx-auto">
-    <div class="mb-6">
-      <nav class="text-sm text-gray-500 mb-4">
-        <a href="/" class="hover:text-gray-700">← Back to Services</a>
-      </nav>
+  <body class="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+    {{template "header.html" .}}
+    
+    <div class="flex">
+      {{template "sidebar.html" .}}
       
-      {{if .Message}}
-        <h1 class="text-3xl font-bold text-gray-900">{{.Message.Name}}</h1>
-        <p class="text-lg text-gray-600 mt-2">{{.Message.FullName}}</p>
-        
-        {{if .Message.Comment}}
-          <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p class="text-gray-700">{{.Message.Comment}}</p>
+      <main class="flex-1 min-w-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <nav class="breadcrumb mb-6">
+            <a href="/">Home</a>
+            <span>→</span>
+            <span>{{if .Message}}{{.Message.Name}}{{else}}{{.Enum.Name}}{{end}}</span>
+          </nav>
+          
+          <div class="max-w-4xl">
+            <div class="mb-8">
+              {{if .Message}}
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{.Message.Name}}</h1>
+                <p class="text-lg text-gray-600 dark:text-gray-400 mt-2">{{.Message.FullName}}</p>
+                
+                {{if .Message.Comment}}
+                  <div class="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                    <div class="prose prose-sm dark:prose-invert max-w-none">
+                      <p class="text-gray-700 dark:text-gray-300">{{.Message.Comment}}</p>
+                    </div>
+                  </div>
+                {{end}}
+              {{end}}
+              
+              {{if .Enum}}
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{.Enum.Name}}</h1>
+                <p class="text-lg text-gray-600 dark:text-gray-400 mt-2">{{.Enum.FullName}}</p>
+                
+                {{if .Enum.Comment}}
+                  <div class="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                    <div class="prose prose-sm dark:prose-invert max-w-none">
+                      <p class="text-gray-700 dark:text-gray-300">{{.Enum.Comment}}</p>
+                    </div>
+                  </div>
+                {{end}}
+              {{end}}
+            </div>
+
+            {{if .Message}}
+              {{if .Message.Fields}}
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                  <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Fields</h2>
+                  </div>
+                  <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                      <thead class="bg-gray-50 dark:bg-gray-700">
+                        <tr>
+                          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+                          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Number</th>
+                          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Type</th>
+                          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Label</th>
+                          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Oneof</th>
+                          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Description</th>
+                        </tr>
+                      </thead>
+                      <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        {{range .Message.Fields}}
+                          <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{.Name}}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{.Number}}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                              {{if or (contains .Type ".") (eq .Type "message") (eq .Type "enum")}}
+                                <a href="/types/{{.Type}}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200">{{.Type}}</a>
+                              {{else}}
+                                {{.Type}}
+                              {{end}}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{.Label}}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{.Oneof}}</td>
+                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{.Comment}}</td>
+                          </tr>
+                        {{end}}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              {{else}}
+                <div class="text-center py-12">
+                  <h2 class="text-xl font-medium text-gray-900 dark:text-white mb-2">No fields found</h2>
+                  <p class="text-gray-600 dark:text-gray-400">This message doesn't have any fields defined.</p>
+                </div>
+              {{end}}
+            {{end}}
+
+            {{if .Enum}}
+              {{if .Enum.Values}}
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                  <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Values</h2>
+                  </div>
+                  <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                      <thead class="bg-gray-50 dark:bg-gray-700">
+                        <tr>
+                          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
+                          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Number</th>
+                          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Description</th>
+                        </tr>
+                      </thead>
+                      <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        {{range .Enum.Values}}
+                          <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">{{.Name}}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{.Number}}</td>
+                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400">{{.Comment}}</td>
+                          </tr>
+                        {{end}}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              {{else}}
+                <div class="text-center py-12">
+                  <h2 class="text-xl font-medium text-gray-900 dark:text-white mb-2">No values found</h2>
+                  <p class="text-gray-600 dark:text-gray-400">This enum doesn't have any values defined.</p>
+                </div>
+              {{end}}
+            {{end}}
           </div>
-        {{end}}
-      {{end}}
-      
-      {{if .Enum}}
-        <h1 class="text-3xl font-bold text-gray-900">{{.Enum.Name}}</h1>
-        <p class="text-lg text-gray-600 mt-2">{{.Enum.FullName}}</p>
-        
-        {{if .Enum.Comment}}
-          <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <p class="text-gray-700">{{.Enum.Comment}}</p>
-          </div>
-        {{end}}
-      {{end}}
+        </div>
+      </main>
     </div>
-
-    {{if .Message}}
-      {{if .Message.Fields}}
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div class="px-6 py-4 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-900">Fields</h2>
-          </div>
-          <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Number</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Label</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Oneof</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                </tr>
-              </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
-                {{range .Message.Fields}}
-                  <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{.Name}}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{.Number}}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {{if or (contains .Type ".") (eq .Type "message") (eq .Type "enum")}}
-                        <a href="/types/{{.Type}}" class="text-blue-600 hover:text-blue-800">{{.Type}}</a>
-                      {{else}}
-                        {{.Type}}
-                      {{end}}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{.Label}}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{.Oneof}}</td>
-                    <td class="px-6 py-4 text-sm text-gray-500">{{.Comment}}</td>
-                  </tr>
-                {{end}}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      {{else}}
-        <div class="text-center py-12">
-          <h2 class="text-xl font-medium text-gray-900 mb-2">No fields found</h2>
-          <p class="text-gray-600">This message doesn't have any fields defined.</p>
-        </div>
-      {{end}}
-    {{end}}
-
-    {{if .Enum}}
-      {{if .Enum.Values}}
-        <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-          <div class="px-6 py-4 border-b border-gray-200">
-            <h2 class="text-xl font-semibold text-gray-900">Values</h2>
-          </div>
-          <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-              <thead class="bg-gray-50">
-                <tr>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Number</th>
-                  <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-                </tr>
-              </thead>
-              <tbody class="bg-white divide-y divide-gray-200">
-                {{range .Enum.Values}}
-                  <tr>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{.Name}}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{.Number}}</td>
-                    <td class="px-6 py-4 text-sm text-gray-500">{{.Comment}}</td>
-                  </tr>
-                {{end}}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      {{else}}
-        <div class="text-center py-12">
-          <h2 class="text-xl font-medium text-gray-900 mb-2">No values found</h2>
-          <p class="text-gray-600">This enum doesn't have any values defined.</p>
-        </div>
-      {{end}}
-    {{end}}
-    </main>
   </body>
 </html>

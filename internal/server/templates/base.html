@@ -5,10 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{block "title" .}}{{.Title}}{{end}}</title>
     <link rel="stylesheet" href="/static/app.css" />
+    <script src="/static/theme.js"></script>
   </head>
-  <body class="min-h-screen bg-gray-50 text-gray-900">
-    <main class="container mx-auto p-6">
-      {{block "content" .}}{{end}}
-    </main>
+  <body class="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+    {{template "header.html" .}}
+    
+    <div class="flex">
+      {{template "sidebar.html" .}}
+      
+      <main class="flex-1 min-w-0">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {{block "breadcrumb" .}}{{end}}
+          {{block "content" .}}{{end}}
+        </div>
+      </main>
+    </div>
   </body>
 </html>

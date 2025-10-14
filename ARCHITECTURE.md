@@ -126,8 +126,11 @@ requestTimeoutSeconds: 15
 
 ## Build & Assets
 
-- Tailwind built at release-time into `internal/server/static/app.css`; embed templates/static via `go:embed`.
-- Single static binary; no node at runtime.
+- Tailwind CSS with CLI build pipeline (`npm run build-css`) generating `internal/server/static/app.css`
+- Dark mode support with system preference detection and localStorage persistence
+- Templates and static assets embedded via `go:embed`
+- Single static binary; no node at runtime
+- Theme toggle with smooth transitions and accessible design
 
 ## Milestones
 
