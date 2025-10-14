@@ -127,7 +127,9 @@ func buildCommentIndex(fdSet *descriptorpb.FileDescriptorSet, registry *Registry
 			servicePath := []int32{6, int32(i)} // 6 = service
 			comment := extractComment(file.SourceCodeInfo, servicePath)
 			if comment != "" {
-				registry.CommentIndex[*service.Name] = comment
+				// Use full name instead of just name
+				serviceFullName := fmt.Sprintf("%s.%s", file.GetPackage(), *service.Name)
+				registry.CommentIndex[serviceFullName] = comment
 			}
 
 			// Extract comments for methods
@@ -135,7 +137,8 @@ func buildCommentIndex(fdSet *descriptorpb.FileDescriptorSet, registry *Registry
 				methodPath := []int32{6, int32(i), 2, int32(j)} // 6 = service, 2 = method
 				comment := extractComment(file.SourceCodeInfo, methodPath)
 				if comment != "" {
-					methodName := fmt.Sprintf("%s/%s", *service.Name, *method.Name)
+					// Use full name format
+					methodName := fmt.Sprintf("%s.%s/%s", file.GetPackage(), *service.Name, *method.Name)
 					registry.CommentIndex[methodName] = comment
 				}
 			}
@@ -143,22 +146,24 @@ func buildCommentIndex(fdSet *descriptorpb.FileDescriptorSet, registry *Registry
 
 		// Extract comments for messages
 		for i, message := range file.MessageType {
-			extractMessageComments(file.SourceCodeInfo, message, registry, []int32{4, int32(i)})
+			extractMessageComments(file.SourceCodeInfo, message, registry, []int32{4, int32(i)}, file.GetPackage())
 		}
 
 		// Extract comments for enums
 		for i, enum := range file.EnumType {
-			extractEnumComments(file.SourceCodeInfo, enum, registry, []int32{5, int32(i)})
+			extractEnumComments(file.SourceCodeInfo, enum, registry, []int32{5, int32(i)}, file.GetPackage())
 		}
 	}
 }
 
 // extractMessageComments recursively extracts comments from message types and their fields.
-func extractMessageComments(sourceInfo *descriptorpb.SourceCodeInfo, message *descriptorpb.DescriptorProto, registry *Registry, path []int32) {
+func extractMessageComments(sourceInfo *descriptorpb.SourceCodeInfo, message *descriptorpb.DescriptorProto, registry *Registry, path []int32, packageName string) {
 	// Extract comment for the message itself
 	comment := extractComment(sourceInfo, path)
 	if comment != "" {
-		registry.CommentIndex[*message.Name] = comment
+		// Use full name
+		messageFullName := fmt.Sprintf("%s.%s", packageName, *message.Name)
+		registry.CommentIndex[messageFullName] = comment
 	}
 
 	// Extract comments for fields
@@ -166,7 +171,8 @@ func extractMessageComments(sourceInfo *descriptorpb.SourceCodeInfo, message *de
 		fieldPath := append(path, 2, int32(i)) // 2 = field
 		comment := extractComment(sourceInfo, fieldPath)
 		if comment != "" {
-			fieldName := fmt.Sprintf("%s.%s", *message.Name, *field.Name)
+			// Use full name
+			fieldName := fmt.Sprintf("%s.%s.%s", packageName, *message.Name, *field.Name)
 			registry.CommentIndex[fieldName] = comment
 		}
 	}
@@ -174,22 +180,24 @@ func extractMessageComments(sourceInfo *descriptorpb.SourceCodeInfo, message *de
 	// Extract comments for nested messages
 	for i, nested := range message.NestedType {
 		nestedPath := append(path, 3, int32(i)) // 3 = nested_type
-		extractMessageComments(sourceInfo, nested, registry, nestedPath)
+		extractMessageComments(sourceInfo, nested, registry, nestedPath, packageName)
 	}
 
 	// Extract comments for nested enums
 	for i, nested := range message.EnumType {
 		nestedPath := append(path, 4, int32(i)) // 4 = enum_type
-		extractEnumComments(sourceInfo, nested, registry, nestedPath)
+		extractEnumComments(sourceInfo, nested, registry, nestedPath, packageName)
 	}
 }
 
 // extractEnumComments recursively extracts comments from enum types and their values.
-func extractEnumComments(sourceInfo *descriptorpb.SourceCodeInfo, enum *descriptorpb.EnumDescriptorProto, registry *Registry, path []int32) {
+func extractEnumComments(sourceInfo *descriptorpb.SourceCodeInfo, enum *descriptorpb.EnumDescriptorProto, registry *Registry, path []int32, packageName string) {
 	// Extract comment for the enum itself
 	comment := extractComment(sourceInfo, path)
 	if comment != "" {
-		registry.CommentIndex[*enum.Name] = comment
+		// Use full name
+		enumFullName := fmt.Sprintf("%s.%s", packageName, *enum.Name)
+		registry.CommentIndex[enumFullName] = comment
 	}
 
 	// Extract comments for enum values
@@ -197,7 +205,8 @@ func extractEnumComments(sourceInfo *descriptorpb.SourceCodeInfo, enum *descript
 		valuePath := append(path, 2, int32(i)) // 2 = value
 		comment := extractComment(sourceInfo, valuePath)
 		if comment != "" {
-			valueName := fmt.Sprintf("%s.%s", *enum.Name, *value.Name)
+			// Use full name
+			valueName := fmt.Sprintf("%s.%s.%s", packageName, *enum.Name, *value.Name)
 			registry.CommentIndex[valueName] = comment
 		}
 	}

@@ -1,0 +1,458 @@
+syntax = "proto3";
+
+package products.v1;
+
+option go_package = "github.com/bnprtr/reflect/internal/descriptor/testdata/comprehensive/products";
+
+import "google/protobuf/timestamp.proto";
+import "common/types.proto";
+
+// ProductService manages product catalog and inventory.
+// This service handles all product-related operations including catalog management,
+// inventory tracking, and pricing.
+service ProductService {
+  // CreateProduct adds a new product to the catalog.
+  rpc CreateProduct(CreateProductRequest) returns (CreateProductResponse) {}
+
+  // GetProduct retrieves a product by ID or SKU.
+  rpc GetProduct(GetProductRequest) returns (GetProductResponse) {}
+
+  // UpdateProduct updates an existing product.
+  rpc UpdateProduct(UpdateProductRequest) returns (UpdateProductResponse) {}
+
+  // DeleteProduct removes a product from the catalog.
+  rpc DeleteProduct(DeleteProductRequest) returns (DeleteProductResponse) {}
+
+  // ListProducts returns a paginated list of products.
+  rpc ListProducts(ListProductsRequest) returns (ListProductsResponse) {}
+
+  // SearchProducts performs full-text search across products.
+  rpc SearchProducts(SearchProductsRequest) returns (SearchProductsResponse) {}
+
+  // UpdateInventory updates product inventory levels.
+  rpc UpdateInventory(UpdateInventoryRequest) returns (UpdateInventoryResponse) {}
+
+  // GetInventory retrieves current inventory for a product.
+  rpc GetInventory(GetInventoryRequest) returns (GetInventoryResponse) {}
+
+  // StreamInventoryUpdates streams real-time inventory changes.
+  // This is useful for monitoring stock levels across multiple products.
+  rpc StreamInventoryUpdates(StreamInventoryUpdatesRequest) returns (stream InventoryUpdate) {}
+}
+
+// Product represents a product in the catalog.
+message Product {
+  // Common metadata.
+  common.v1.Metadata metadata = 1;
+
+  // Stock keeping unit (unique identifier).
+  string sku = 2;
+
+  // Product name.
+  string name = 3;
+
+  // Product description.
+  string description = 4;
+
+  // Product category.
+  Category category = 5;
+
+  // Product pricing.
+  Pricing pricing = 6;
+
+  // Product dimensions and weight.
+  Dimensions dimensions = 7;
+
+  // Product images.
+  repeated ProductImage images = 8;
+
+  // Product attributes (color, size, etc.).
+  map<string, string> attributes = 9;
+
+  // Product tags for search and categorization.
+  repeated string tags = 10;
+
+  // Product status.
+  ProductStatus status = 11;
+
+  // Inventory information.
+  Inventory inventory = 12;
+
+  // Related product IDs.
+  repeated string related_product_ids = 13;
+}
+
+// Category represents a product category hierarchy.
+message Category {
+  // Category ID.
+  string id = 1;
+
+  // Category name.
+  string name = 2;
+
+  // Parent category ID (empty for root categories).
+  string parent_id = 3;
+
+  // Category path (e.g., "Electronics/Computers/Laptops").
+  string path = 4;
+}
+
+// Pricing contains pricing information for a product.
+message Pricing {
+  // Regular price.
+  common.v1.Money regular_price = 1;
+
+  // Sale price (if on sale).
+  common.v1.Money sale_price = 2;
+
+  // Cost price (for internal use).
+  common.v1.Money cost_price = 3;
+
+  // Whether the product is currently on sale.
+  bool on_sale = 4;
+
+  // Sale start date.
+  google.protobuf.Timestamp sale_start_date = 5;
+
+  // Sale end date.
+  google.protobuf.Timestamp sale_end_date = 6;
+
+  // Tax information.
+  TaxInfo tax_info = 7;
+}
+
+// TaxInfo contains tax-related information.
+message TaxInfo {
+  // Whether the product is taxable.
+  bool taxable = 1;
+
+  // Tax code (e.g., "GENERAL", "FOOD", "DIGITAL").
+  string tax_code = 2;
+
+  // Tax rate (as percentage, e.g., 8.5 for 8.5%).
+  double tax_rate = 3;
+}
+
+// Dimensions contains physical dimensions and weight.
+message Dimensions {
+  // Length in specified unit.
+  double length = 1;
+
+  // Width in specified unit.
+  double width = 2;
+
+  // Height in specified unit.
+  double height = 3;
+
+  // Weight in specified unit.
+  double weight = 4;
+
+  // Unit for dimensions.
+  DimensionUnit dimension_unit = 5;
+
+  // Unit for weight.
+  WeightUnit weight_unit = 6;
+}
+
+// ProductImage represents a product image.
+message ProductImage {
+  // Image ID.
+  string id = 1;
+
+  // Image URL.
+  string url = 2;
+
+  // Thumbnail URL.
+  string thumbnail_url = 3;
+
+  // Alt text for accessibility.
+  string alt_text = 4;
+
+  // Sort order.
+  int32 sort_order = 5;
+
+  // Whether this is the primary image.
+  bool is_primary = 6;
+}
+
+// Inventory tracks product stock levels.
+message Inventory {
+  // Quantity in stock.
+  int32 quantity = 1;
+
+  // Reserved quantity (in carts, pending orders).
+  int32 reserved_quantity = 2;
+
+  // Available quantity (quantity - reserved_quantity).
+  int32 available_quantity = 3;
+
+  // Reorder point (minimum quantity before restocking).
+  int32 reorder_point = 4;
+
+  // Reorder quantity.
+  int32 reorder_quantity = 5;
+
+  // Warehouse location.
+  string warehouse_location = 6;
+
+  // Inventory tracking enabled.
+  bool tracking_enabled = 7;
+
+  // Stock status.
+  StockStatus stock_status = 8;
+}
+
+// ProductStatus indicates the status of a product.
+enum ProductStatus {
+  // Status is not specified.
+  PRODUCT_STATUS_UNSPECIFIED = 0;
+
+  // Product is active and available for sale.
+  PRODUCT_STATUS_ACTIVE = 1;
+
+  // Product is inactive and not available for sale.
+  PRODUCT_STATUS_INACTIVE = 2;
+
+  // Product is archived.
+  PRODUCT_STATUS_ARCHIVED = 3;
+
+  // Product is in draft state.
+  PRODUCT_STATUS_DRAFT = 4;
+}
+
+// StockStatus indicates the stock availability status.
+enum StockStatus {
+  // Stock status is not specified.
+  STOCK_STATUS_UNSPECIFIED = 0;
+
+  // In stock and available.
+  STOCK_STATUS_IN_STOCK = 1;
+
+  // Out of stock.
+  STOCK_STATUS_OUT_OF_STOCK = 2;
+
+  // Low stock (below reorder point).
+  STOCK_STATUS_LOW_STOCK = 3;
+
+  // Discontinued.
+  STOCK_STATUS_DISCONTINUED = 4;
+
+  // Pre-order only.
+  STOCK_STATUS_PRE_ORDER = 5;
+}
+
+// DimensionUnit represents units for dimensions.
+enum DimensionUnit {
+  // Unspecified dimension unit.
+  DIMENSION_UNIT_UNSPECIFIED = 0;
+
+  // Inches.
+  DIMENSION_UNIT_INCHES = 1;
+
+  // Centimeters.
+  DIMENSION_UNIT_CENTIMETERS = 2;
+
+  // Meters.
+  DIMENSION_UNIT_METERS = 3;
+}
+
+// WeightUnit represents units for weight.
+enum WeightUnit {
+  // Unspecified weight unit.
+  WEIGHT_UNIT_UNSPECIFIED = 0;
+
+  // Pounds.
+  WEIGHT_UNIT_POUNDS = 1;
+
+  // Kilograms.
+  WEIGHT_UNIT_KILOGRAMS = 2;
+
+  // Ounces.
+  WEIGHT_UNIT_OUNCES = 3;
+}
+
+// CreateProductRequest creates a new product.
+message CreateProductRequest {
+  // The product to create.
+  Product product = 1;
+}
+
+// CreateProductResponse returns the created product.
+message CreateProductResponse {
+  // The created product.
+  Product product = 1;
+}
+
+// GetProductRequest retrieves a product.
+message GetProductRequest {
+  // The product identifier.
+  oneof identifier {
+    // Product ID.
+    string product_id = 1;
+
+    // Product SKU.
+    string sku = 2;
+  }
+}
+
+// GetProductResponse returns the requested product.
+message GetProductResponse {
+  // The requested product.
+  Product product = 1;
+}
+
+// UpdateProductRequest updates a product.
+message UpdateProductRequest {
+  // The product to update.
+  Product product = 1;
+}
+
+// UpdateProductResponse returns the updated product.
+message UpdateProductResponse {
+  // The updated product.
+  Product product = 1;
+}
+
+// DeleteProductRequest deletes a product.
+message DeleteProductRequest {
+  // The product ID to delete.
+  string product_id = 1;
+}
+
+// DeleteProductResponse confirms deletion.
+message DeleteProductResponse {
+  // Deletion timestamp.
+  google.protobuf.Timestamp deleted_at = 1;
+}
+
+// ListProductsRequest lists products with pagination.
+message ListProductsRequest {
+  // Pagination parameters.
+  common.v1.Pagination pagination = 1;
+
+  // Filter by category ID.
+  string category_id = 2;
+
+  // Filter by status.
+  ProductStatus status = 3;
+
+  // Filter by tags.
+  repeated string tags = 4;
+}
+
+// ListProductsResponse returns a list of products.
+message ListProductsResponse {
+  // The list of products.
+  repeated Product products = 1;
+
+  // Pagination information.
+  common.v1.PageInfo page_info = 2;
+}
+
+// SearchProductsRequest searches products.
+message SearchProductsRequest {
+  // Search query.
+  string query = 1;
+
+  // Pagination parameters.
+  common.v1.Pagination pagination = 2;
+
+  // Filter by category.
+  string category_id = 3;
+
+  // Price range filter.
+  PriceRange price_range = 4;
+}
+
+// PriceRange specifies a price range for filtering.
+message PriceRange {
+  // Minimum price.
+  common.v1.Money min_price = 1;
+
+  // Maximum price.
+  common.v1.Money max_price = 2;
+}
+
+// SearchProductsResponse returns search results.
+message SearchProductsResponse {
+  // Matching products.
+  repeated Product products = 1;
+
+  // Pagination information.
+  common.v1.PageInfo page_info = 2;
+}
+
+// UpdateInventoryRequest updates product inventory.
+message UpdateInventoryRequest {
+  // Product ID.
+  string product_id = 1;
+
+  // Quantity change (positive or negative).
+  int32 quantity_delta = 2;
+
+  // Reason for the change.
+  InventoryChangeReason reason = 3;
+
+  // Optional note.
+  string note = 4;
+}
+
+// InventoryChangeReason indicates why inventory changed.
+enum InventoryChangeReason {
+  // Reason is not specified.
+  INVENTORY_CHANGE_REASON_UNSPECIFIED = 0;
+
+  // Sold to customer.
+  INVENTORY_CHANGE_REASON_SALE = 1;
+
+  // Returned by customer.
+  INVENTORY_CHANGE_REASON_RETURN = 2;
+
+  // Restocked.
+  INVENTORY_CHANGE_REASON_RESTOCK = 3;
+
+  // Damaged or lost.
+  INVENTORY_CHANGE_REASON_DAMAGE = 4;
+
+  // Manual adjustment.
+  INVENTORY_CHANGE_REASON_ADJUSTMENT = 5;
+}
+
+// UpdateInventoryResponse returns updated inventory.
+message UpdateInventoryResponse {
+  // Updated inventory.
+  Inventory inventory = 1;
+}
+
+// GetInventoryRequest retrieves product inventory.
+message GetInventoryRequest {
+  // Product ID.
+  string product_id = 1;
+}
+
+// GetInventoryResponse returns product inventory.
+message GetInventoryResponse {
+  // Current inventory.
+  Inventory inventory = 1;
+}
+
+// StreamInventoryUpdatesRequest subscribes to inventory updates.
+message StreamInventoryUpdatesRequest {
+  // Product IDs to monitor (empty for all products).
+  repeated string product_ids = 1;
+}
+
+// InventoryUpdate represents an inventory change event.
+message InventoryUpdate {
+  // Product ID.
+  string product_id = 1;
+
+  // Updated inventory.
+  Inventory inventory = 2;
+
+  // Change reason.
+  InventoryChangeReason reason = 3;
+
+  // Timestamp of the change.
+  google.protobuf.Timestamp timestamp = 4;
+}

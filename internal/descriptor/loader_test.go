@@ -159,7 +159,7 @@ func TestDiscoverProtoFiles(t *testing.T) {
 		{
 			name:      "entire testdata directory",
 			root:      testDataDir,
-			wantCount: 4, // All proto files
+			wantCount: 10, // All proto files including http, comprehensive/*
 			wantError: false,
 		},
 	}

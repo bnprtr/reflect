@@ -1,0 +1,175 @@
+syntax = "proto3";
+
+package common.v1;
+
+option go_package = "github.com/bnprtr/reflect/internal/descriptor/testdata/comprehensive/common";
+
+import "google/protobuf/timestamp.proto";
+
+// Money represents a monetary amount with currency.
+// This is a shared type used across multiple services.
+message Money {
+  // The currency code (e.g., "USD", "EUR", "GBP").
+  // Must be a valid ISO 4217 currency code.
+  string currency_code = 1;
+
+  // The amount in the smallest currency unit (e.g., cents for USD).
+  // For example, $10.50 USD would be represented as 1050.
+  int64 units = 2;
+
+  // Deprecated: Use units instead.
+  // The decimal amount (e.g., 10.50). This field is deprecated.
+  double amount_deprecated = 3 [deprecated = true];
+}
+
+// Address represents a physical address.
+message Address {
+  // Street address line 1 (e.g., "123 Main St").
+  string street_line1 = 1;
+
+  // Street address line 2 (e.g., "Apt 4B").
+  // This field is optional.
+  string street_line2 = 2;
+
+  // City name.
+  string city = 3;
+
+  // State or province code.
+  string state = 4;
+
+  // Postal or ZIP code.
+  string postal_code = 5;
+
+  // Country code (ISO 3166-1 alpha-2).
+  string country_code = 6;
+
+  // Geographic coordinates.
+  GeoCoordinates coordinates = 7;
+}
+
+// GeoCoordinates represents a geographic location.
+message GeoCoordinates {
+  // Latitude in decimal degrees.
+  // Valid range: -90.0 to +90.0
+  double latitude = 1;
+
+  // Longitude in decimal degrees.
+  // Valid range: -180.0 to +180.0
+  double longitude = 2;
+}
+
+// Pagination contains pagination parameters for list requests.
+message Pagination {
+  // The maximum number of items to return.
+  // Valid range: 1 to 100. Default is 20.
+  int32 page_size = 1;
+
+  // Opaque page token for fetching the next page.
+  // Leave empty for the first request.
+  string page_token = 2;
+}
+
+// PageInfo contains pagination information in list responses.
+message PageInfo {
+  // Total number of items available (if known).
+  // May be -1 if the total is unknown or expensive to compute.
+  int64 total_items = 1;
+
+  // Token to fetch the next page.
+  // Empty if there are no more pages.
+  string next_page_token = 2;
+
+  // Token to fetch the previous page.
+  // Empty if this is the first page.
+  string prev_page_token = 3;
+
+  // Number of items returned in this response.
+  int32 page_size = 4;
+}
+
+// ErrorInfo provides detailed error information.
+message ErrorInfo {
+  // Error code (e.g., "INVALID_ARGUMENT", "NOT_FOUND").
+  string code = 1;
+
+  // Human-readable error message.
+  string message = 2;
+
+  // Additional error details.
+  repeated ErrorDetail details = 3;
+
+  // Timestamp when the error occurred.
+  google.protobuf.Timestamp timestamp = 4;
+}
+
+// ErrorDetail provides additional context about an error.
+message ErrorDetail {
+  // Field path that caused the error (e.g., "user.email").
+  string field = 1;
+
+  // Specific error message for this field.
+  string message = 2;
+
+  // Error type.
+  ErrorType type = 3;
+}
+
+// ErrorType categorizes different types of errors.
+enum ErrorType {
+  // Unspecified error type.
+  ERROR_TYPE_UNSPECIFIED = 0;
+
+  // Required field is missing.
+  ERROR_TYPE_REQUIRED = 1;
+
+  // Field value is invalid.
+  ERROR_TYPE_INVALID = 2;
+
+  // Field value is out of range.
+  ERROR_TYPE_OUT_OF_RANGE = 3;
+
+  // Duplicate value detected.
+  ERROR_TYPE_DUPLICATE = 4;
+
+  // Resource not found.
+  ERROR_TYPE_NOT_FOUND = 5;
+
+  // Permission denied.
+  ERROR_TYPE_PERMISSION_DENIED = 6;
+}
+
+// Status represents the general status of an operation or resource.
+enum Status {
+  // Status is not specified.
+  STATUS_UNSPECIFIED = 0;
+
+  // Operation or resource is active.
+  STATUS_ACTIVE = 1;
+
+  // Operation or resource is inactive.
+  STATUS_INACTIVE = 2;
+
+  // Operation or resource is pending.
+  STATUS_PENDING = 3;
+
+  // Operation or resource has been deleted.
+  STATUS_DELETED = 4;
+}
+
+// Metadata provides common metadata fields for resources.
+message Metadata {
+  // Unique resource identifier.
+  string id = 1;
+
+  // Timestamp when the resource was created.
+  google.protobuf.Timestamp created_at = 2;
+
+  // Timestamp when the resource was last updated.
+  google.protobuf.Timestamp updated_at = 3;
+
+  // Version number for optimistic locking.
+  int64 version = 4;
+
+  // Arbitrary key-value pairs for extensibility.
+  map<string, string> labels = 5;
+}

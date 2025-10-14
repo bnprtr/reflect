@@ -1,0 +1,584 @@
+syntax = "proto3";
+
+package notifications.v1;
+
+option go_package = "github.com/bnprtr/reflect/internal/descriptor/testdata/comprehensive/notifications";
+
+import "google/protobuf/timestamp.proto";
+import "common/types.proto";
+
+// NotificationService manages user notifications across multiple channels.
+// This service supports email, push, SMS, and in-app notifications with
+// comprehensive delivery tracking and user preferences.
+service NotificationService {
+  // SendNotification sends a notification to specified recipients.
+  rpc SendNotification(SendNotificationRequest) returns (SendNotificationResponse) {}
+
+  // SendBatchNotifications sends notifications to multiple recipients.
+  // This is more efficient than calling SendNotification multiple times.
+  rpc SendBatchNotifications(SendBatchNotificationsRequest) returns (SendBatchNotificationsResponse) {}
+
+  // GetNotification retrieves a notification by ID.
+  rpc GetNotification(GetNotificationRequest) returns (GetNotificationResponse) {}
+
+  // ListNotifications returns a paginated list of notifications for a user.
+  rpc ListNotifications(ListNotificationsRequest) returns (ListNotificationsResponse) {}
+
+  // MarkNotificationAsRead marks a notification as read.
+  rpc MarkNotificationAsRead(MarkNotificationAsReadRequest) returns (MarkNotificationAsReadResponse) {}
+
+  // MarkAllNotificationsAsRead marks all notifications as read for a user.
+  rpc MarkAllNotificationsAsRead(MarkAllNotificationsAsReadRequest) returns (MarkAllNotificationsAsReadResponse) {}
+
+  // DeleteNotification deletes a notification.
+  rpc DeleteNotification(DeleteNotificationRequest) returns (DeleteNotificationResponse) {}
+
+  // GetNotificationPreferences retrieves notification preferences for a user.
+  rpc GetNotificationPreferences(GetNotificationPreferencesRequest) returns (GetNotificationPreferencesResponse) {}
+
+  // UpdateNotificationPreferences updates notification preferences for a user.
+  rpc UpdateNotificationPreferences(UpdateNotificationPreferencesRequest) returns (UpdateNotificationPreferencesResponse) {}
+
+  // SubscribeToNotifications streams notifications to a user in real-time.
+  // This uses server-side streaming to push notifications as they arrive.
+  rpc SubscribeToNotifications(SubscribeToNotificationsRequest) returns (stream Notification) {}
+
+  // SendBulkNotifications sends notifications using client-side streaming.
+  // This is useful for batch sending from multiple sources.
+  rpc SendBulkNotifications(stream SendNotificationRequest) returns (SendBulkNotificationsResponse) {}
+
+  // NotificationChannel provides bidirectional streaming for real-time notifications.
+  // Clients can acknowledge receipts and request resends.
+  rpc NotificationChannel(stream NotificationChannelRequest) returns (stream NotificationChannelResponse) {}
+}
+
+// Notification represents a notification message.
+message Notification {
+  // Common metadata.
+  common.v1.Metadata metadata = 1;
+
+  // Recipient user ID.
+  string recipient_id = 2;
+
+  // Notification type.
+  NotificationType type = 3;
+
+  // Notification priority.
+  NotificationPriority priority = 4;
+
+  // Notification title.
+  string title = 5;
+
+  // Notification body/message.
+  string body = 6;
+
+  // Rich content (HTML, markdown, etc.).
+  string rich_content = 7;
+
+  // Icon URL.
+  string icon_url = 8;
+
+  // Image URL (for rich notifications).
+  string image_url = 9;
+
+  // Action buttons.
+  repeated NotificationAction actions = 10;
+
+  // Deep link URL for click action.
+  string action_url = 11;
+
+  // Custom data payload.
+  map<string, string> data = 12;
+
+  // Notification channels to use.
+  repeated NotificationChannel channels = 13;
+
+  // Read status.
+  bool is_read = 14;
+
+  // Read timestamp.
+  google.protobuf.Timestamp read_at = 15;
+
+  // Delivery status per channel.
+  repeated DeliveryStatus delivery_status = 16;
+
+  // Expiration timestamp (notifications expire after this time).
+  google.protobuf.Timestamp expires_at = 17;
+
+  // Whether this notification is actionable.
+  bool is_actionable = 18;
+
+  // Group key for notification grouping.
+  string group_key = 19;
+}
+
+// NotificationAction represents an action button in a notification.
+message NotificationAction {
+  // Action ID.
+  string id = 1;
+
+  // Action label.
+  string label = 2;
+
+  // Action URL or deep link.
+  string action_url = 3;
+
+  // Action style.
+  ActionStyle style = 4;
+}
+
+// DeliveryStatus tracks delivery status for a specific channel.
+message DeliveryStatus {
+  // Delivery channel.
+  NotificationChannel channel = 1;
+
+  // Delivery status.
+  DeliveryState state = 2;
+
+  // Attempted timestamp.
+  google.protobuf.Timestamp attempted_at = 3;
+
+  // Delivered timestamp.
+  google.protobuf.Timestamp delivered_at = 4;
+
+  // Error message (if failed).
+  string error_message = 5;
+
+  // Number of retry attempts.
+  int32 retry_count = 6;
+}
+
+// NotificationPreferences contains user notification preferences.
+message NotificationPreferences {
+  // User ID.
+  string user_id = 1;
+
+  // Global notification settings.
+  bool notifications_enabled = 2;
+
+  // Channel preferences.
+  repeated ChannelPreference channel_preferences = 3;
+
+  // Type preferences.
+  repeated TypePreference type_preferences = 4;
+
+  // Quiet hours (do not disturb).
+  QuietHours quiet_hours = 5;
+
+  // Digest settings.
+  DigestSettings digest_settings = 6;
+}
+
+// ChannelPreference contains preferences for a specific channel.
+message ChannelPreference {
+  // Notification channel.
+  NotificationChannel channel = 1;
+
+  // Whether this channel is enabled.
+  bool enabled = 2;
+
+  // Channel-specific configuration.
+  map<string, string> config = 3;
+}
+
+// TypePreference contains preferences for a specific notification type.
+message TypePreference {
+  // Notification type.
+  NotificationType type = 1;
+
+  // Whether notifications of this type are enabled.
+  bool enabled = 2;
+
+  // Preferred channels for this type.
+  repeated NotificationChannel channels = 3;
+
+  // Minimum priority to receive.
+  NotificationPriority min_priority = 4;
+}
+
+// QuietHours defines do-not-disturb periods.
+message QuietHours {
+  // Whether quiet hours are enabled.
+  bool enabled = 1;
+
+  // Start time (24-hour format, e.g., "22:00").
+  string start_time = 2;
+
+  // End time (24-hour format, e.g., "08:00").
+  string end_time = 3;
+
+  // Days of week (0 = Sunday, 6 = Saturday).
+  repeated int32 days = 4;
+
+  // Timezone for quiet hours.
+  string timezone = 5;
+}
+
+// DigestSettings controls notification digest delivery.
+message DigestSettings {
+  // Whether digests are enabled.
+  bool enabled = 1;
+
+  // Digest frequency.
+  DigestFrequency frequency = 2;
+
+  // Preferred delivery time (24-hour format).
+  string delivery_time = 3;
+
+  // Notification types to include in digest.
+  repeated NotificationType types = 4;
+}
+
+// NotificationType categorizes different types of notifications.
+enum NotificationType {
+  // Type is not specified.
+  NOTIFICATION_TYPE_UNSPECIFIED = 0;
+
+  // System notification (maintenance, updates, etc.).
+  NOTIFICATION_TYPE_SYSTEM = 1;
+
+  // Account notification (password change, login, etc.).
+  NOTIFICATION_TYPE_ACCOUNT = 2;
+
+  // Order notification (order placed, shipped, etc.).
+  NOTIFICATION_TYPE_ORDER = 3;
+
+  // Payment notification (payment received, failed, etc.).
+  NOTIFICATION_TYPE_PAYMENT = 4;
+
+  // Social notification (mentions, follows, etc.).
+  NOTIFICATION_TYPE_SOCIAL = 5;
+
+  // Promotional notification (offers, deals, etc.).
+  NOTIFICATION_TYPE_PROMOTIONAL = 6;
+
+  // Reminder notification.
+  NOTIFICATION_TYPE_REMINDER = 7;
+
+  // Alert notification (security, threshold, etc.).
+  NOTIFICATION_TYPE_ALERT = 8;
+}
+
+// NotificationPriority indicates the priority of a notification.
+enum NotificationPriority {
+  // Priority is not specified (default).
+  NOTIFICATION_PRIORITY_UNSPECIFIED = 0;
+
+  // Low priority (can be batched).
+  NOTIFICATION_PRIORITY_LOW = 1;
+
+  // Normal priority.
+  NOTIFICATION_PRIORITY_NORMAL = 2;
+
+  // High priority (deliver immediately).
+  NOTIFICATION_PRIORITY_HIGH = 3;
+
+  // Urgent priority (bypass quiet hours).
+  NOTIFICATION_PRIORITY_URGENT = 4;
+}
+
+// NotificationChannel represents delivery channels.
+enum NotificationChannel {
+  // Channel is not specified.
+  NOTIFICATION_CHANNEL_UNSPECIFIED = 0;
+
+  // In-app notification.
+  NOTIFICATION_CHANNEL_IN_APP = 1;
+
+  // Email notification.
+  NOTIFICATION_CHANNEL_EMAIL = 2;
+
+  // Push notification (mobile/web).
+  NOTIFICATION_CHANNEL_PUSH = 3;
+
+  // SMS notification.
+  NOTIFICATION_CHANNEL_SMS = 4;
+
+  // Webhook notification.
+  NOTIFICATION_CHANNEL_WEBHOOK = 5;
+}
+
+// DeliveryState indicates the delivery state.
+enum DeliveryState {
+  // State is not specified.
+  DELIVERY_STATE_UNSPECIFIED = 0;
+
+  // Queued for delivery.
+  DELIVERY_STATE_QUEUED = 1;
+
+  // Delivery in progress.
+  DELIVERY_STATE_SENDING = 2;
+
+  // Successfully delivered.
+  DELIVERY_STATE_DELIVERED = 3;
+
+  // Delivery failed.
+  DELIVERY_STATE_FAILED = 4;
+
+  // Bounced (email).
+  DELIVERY_STATE_BOUNCED = 5;
+
+  // Suppressed (user opted out).
+  DELIVERY_STATE_SUPPRESSED = 6;
+}
+
+// ActionStyle defines the style of a notification action button.
+enum ActionStyle {
+  // Default style.
+  ACTION_STYLE_UNSPECIFIED = 0;
+
+  // Primary action (emphasized).
+  ACTION_STYLE_PRIMARY = 1;
+
+  // Secondary action.
+  ACTION_STYLE_SECONDARY = 2;
+
+  // Destructive action (red/warning).
+  ACTION_STYLE_DESTRUCTIVE = 3;
+}
+
+// DigestFrequency controls digest delivery frequency.
+enum DigestFrequency {
+  // No digest.
+  DIGEST_FREQUENCY_UNSPECIFIED = 0;
+
+  // Daily digest.
+  DIGEST_FREQUENCY_DAILY = 1;
+
+  // Weekly digest.
+  DIGEST_FREQUENCY_WEEKLY = 2;
+
+  // Bi-weekly digest.
+  DIGEST_FREQUENCY_BIWEEKLY = 3;
+
+  // Monthly digest.
+  DIGEST_FREQUENCY_MONTHLY = 4;
+}
+
+// SendNotificationRequest sends a notification.
+message SendNotificationRequest {
+  // The notification to send.
+  Notification notification = 1;
+
+  // Whether to respect user preferences.
+  bool respect_preferences = 2;
+
+  // Whether to send immediately (bypass queuing).
+  bool send_immediately = 3;
+}
+
+// SendNotificationResponse returns the sent notification.
+message SendNotificationResponse {
+  // The sent notification.
+  Notification notification = 1;
+
+  // Whether notification was queued or sent immediately.
+  bool queued = 2;
+}
+
+// SendBatchNotificationsRequest sends multiple notifications.
+message SendBatchNotificationsRequest {
+  // Notifications to send.
+  repeated Notification notifications = 1;
+
+  // Whether to respect user preferences.
+  bool respect_preferences = 2;
+}
+
+// SendBatchNotificationsResponse returns batch send results.
+message SendBatchNotificationsResponse {
+  // Successfully sent notification IDs.
+  repeated string sent_ids = 1;
+
+  // Failed notification results.
+  repeated FailedNotification failed = 2;
+}
+
+// FailedNotification represents a failed notification send.
+message FailedNotification {
+  // The notification that failed.
+  Notification notification = 1;
+
+  // Error message.
+  string error_message = 2;
+}
+
+// GetNotificationRequest retrieves a notification.
+message GetNotificationRequest {
+  // Notification ID.
+  string notification_id = 1;
+}
+
+// GetNotificationResponse returns the notification.
+message GetNotificationResponse {
+  // The notification.
+  Notification notification = 1;
+}
+
+// ListNotificationsRequest lists notifications.
+message ListNotificationsRequest {
+  // User ID.
+  string user_id = 1;
+
+  // Pagination parameters.
+  common.v1.Pagination pagination = 2;
+
+  // Filter by type.
+  NotificationType type = 3;
+
+  // Filter by read status.
+  optional bool is_read = 4;
+
+  // Filter by priority.
+  NotificationPriority priority = 5;
+}
+
+// ListNotificationsResponse returns notifications.
+message ListNotificationsResponse {
+  // Notifications.
+  repeated Notification notifications = 1;
+
+  // Pagination information.
+  common.v1.PageInfo page_info = 2;
+
+  // Unread count.
+  int32 unread_count = 3;
+}
+
+// MarkNotificationAsReadRequest marks a notification as read.
+message MarkNotificationAsReadRequest {
+  // Notification ID.
+  string notification_id = 1;
+}
+
+// MarkNotificationAsReadResponse confirms the action.
+message MarkNotificationAsReadResponse {
+  // Updated notification.
+  Notification notification = 1;
+}
+
+// MarkAllNotificationsAsReadRequest marks all notifications as read.
+message MarkAllNotificationsAsReadRequest {
+  // User ID.
+  string user_id = 1;
+}
+
+// MarkAllNotificationsAsReadResponse confirms the action.
+message MarkAllNotificationsAsReadResponse {
+  // Number of notifications marked as read.
+  int32 count = 1;
+}
+
+// DeleteNotificationRequest deletes a notification.
+message DeleteNotificationRequest {
+  // Notification ID.
+  string notification_id = 1;
+}
+
+// DeleteNotificationResponse confirms deletion.
+message DeleteNotificationResponse {
+  // Deletion timestamp.
+  google.protobuf.Timestamp deleted_at = 1;
+}
+
+// GetNotificationPreferencesRequest retrieves preferences.
+message GetNotificationPreferencesRequest {
+  // User ID.
+  string user_id = 1;
+}
+
+// GetNotificationPreferencesResponse returns preferences.
+message GetNotificationPreferencesResponse {
+  // User's notification preferences.
+  NotificationPreferences preferences = 1;
+}
+
+// UpdateNotificationPreferencesRequest updates preferences.
+message UpdateNotificationPreferencesRequest {
+  // Updated preferences.
+  NotificationPreferences preferences = 1;
+}
+
+// UpdateNotificationPreferencesResponse returns updated preferences.
+message UpdateNotificationPreferencesResponse {
+  // Updated preferences.
+  NotificationPreferences preferences = 1;
+}
+
+// SubscribeToNotificationsRequest subscribes to notifications.
+message SubscribeToNotificationsRequest {
+  // User ID.
+  string user_id = 1;
+
+  // Notification types to subscribe to.
+  repeated NotificationType types = 2;
+
+  // Minimum priority to receive.
+  NotificationPriority min_priority = 3;
+}
+
+// SendBulkNotificationsResponse returns bulk send results.
+message SendBulkNotificationsResponse {
+  // Number of notifications sent.
+  int32 sent_count = 1;
+
+  // Number of notifications failed.
+  int32 failed_count = 2;
+}
+
+// NotificationChannelRequest is used in bidirectional streaming.
+message NotificationChannelRequest {
+  // Request type.
+  oneof request {
+    // Subscribe to notifications.
+    SubscribeToNotificationsRequest subscribe = 1;
+
+    // Acknowledge receipt.
+    AckNotification ack = 2;
+
+    // Request resend.
+    ResendNotification resend = 3;
+
+    // Update preferences.
+    UpdateNotificationPreferencesRequest update_preferences = 4;
+  }
+}
+
+// AckNotification acknowledges receipt of a notification.
+message AckNotification {
+  // Notification ID.
+  string notification_id = 1;
+
+  // Acknowledgment timestamp.
+  google.protobuf.Timestamp timestamp = 2;
+}
+
+// ResendNotification requests a notification to be resent.
+message ResendNotification {
+  // Notification ID.
+  string notification_id = 1;
+}
+
+// NotificationChannelResponse is used in bidirectional streaming.
+message NotificationChannelResponse {
+  // Response type.
+  oneof response {
+    // A notification.
+    Notification notification = 1;
+
+    // Acknowledgment confirmation.
+    AckConfirmation ack_confirmation = 2;
+
+    // Error message.
+    common.v1.ErrorInfo error = 3;
+  }
+}
+
+// AckConfirmation confirms receipt acknowledgment.
+message AckConfirmation {
+  // Notification ID.
+  string notification_id = 1;
+
+  // Confirmation timestamp.
+  google.protobuf.Timestamp timestamp = 2;
+}

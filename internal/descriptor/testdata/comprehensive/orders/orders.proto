@@ -1,0 +1,592 @@
+syntax = "proto3";
+
+package orders.v1;
+
+option go_package = "github.com/bnprtr/reflect/internal/descriptor/testdata/comprehensive/orders";
+
+import "google/protobuf/timestamp.proto";
+import "common/types.proto";
+import "users/users.proto";
+import "products/products.proto";
+
+// OrderService manages customer orders and fulfillment.
+// This service handles the complete order lifecycle from creation through
+// fulfillment, including payment processing and shipping.
+service OrderService {
+  // CreateOrder creates a new order.
+  rpc CreateOrder(CreateOrderRequest) returns (CreateOrderResponse) {}
+
+  // GetOrder retrieves an order by ID.
+  rpc GetOrder(GetOrderRequest) returns (GetOrderResponse) {}
+
+  // UpdateOrder updates an existing order.
+  rpc UpdateOrder(UpdateOrderRequest) returns (UpdateOrderResponse) {}
+
+  // CancelOrder cancels an order.
+  rpc CancelOrder(CancelOrderRequest) returns (CancelOrderResponse) {}
+
+  // ListOrders returns a paginated list of orders.
+  rpc ListOrders(ListOrdersRequest) returns (ListOrdersResponse) {}
+
+  // ProcessPayment processes payment for an order.
+  rpc ProcessPayment(ProcessPaymentRequest) returns (ProcessPaymentResponse) {}
+
+  // UpdateOrderStatus updates the order status.
+  rpc UpdateOrderStatus(UpdateOrderStatusRequest) returns (UpdateOrderStatusResponse) {}
+
+  // TrackOrder retrieves tracking information for an order.
+  rpc TrackOrder(TrackOrderRequest) returns (TrackOrderResponse) {}
+
+  // StreamOrderUpdates streams real-time order status updates.
+  // This allows clients to monitor order progress in real-time.
+  rpc StreamOrderUpdates(StreamOrderUpdatesRequest) returns (stream OrderUpdate) {}
+}
+
+// Order represents a customer order.
+message Order {
+  // Common metadata.
+  common.v1.Metadata metadata = 1;
+
+  // Order number (human-readable, e.g., "ORD-2024-001234").
+  string order_number = 2;
+
+  // Customer user ID.
+  string customer_id = 3;
+
+  // Order items.
+  repeated OrderItem items = 4;
+
+  // Order totals.
+  OrderTotals totals = 5;
+
+  // Shipping address.
+  common.v1.Address shipping_address = 6;
+
+  // Billing address.
+  common.v1.Address billing_address = 7;
+
+  // Payment information.
+  PaymentInfo payment_info = 8;
+
+  // Order status.
+  OrderStatus status = 9;
+
+  // Fulfillment information.
+  FulfillmentInfo fulfillment_info = 10;
+
+  // Customer notes.
+  string customer_notes = 11;
+
+  // Internal notes (not visible to customer).
+  string internal_notes = 12;
+
+  // Order history.
+  repeated OrderHistoryEntry history = 13;
+}
+
+// OrderItem represents a line item in an order.
+message OrderItem {
+  // Line item ID.
+  string id = 1;
+
+  // Product ID.
+  string product_id = 2;
+
+  // Product SKU at time of order.
+  string sku = 3;
+
+  // Product name at time of order.
+  string name = 4;
+
+  // Quantity ordered.
+  int32 quantity = 5;
+
+  // Unit price at time of order.
+  common.v1.Money unit_price = 6;
+
+  // Discount amount per unit.
+  common.v1.Money discount = 7;
+
+  // Tax amount per unit.
+  common.v1.Money tax = 8;
+
+  // Total price for this line item.
+  common.v1.Money total_price = 9;
+
+  // Product attributes at time of order (color, size, etc.).
+  map<string, string> attributes = 10;
+
+  // Fulfillment status for this item.
+  ItemFulfillmentStatus fulfillment_status = 11;
+}
+
+// OrderTotals contains calculated order totals.
+message OrderTotals {
+  // Subtotal (sum of item prices before discounts and taxes).
+  common.v1.Money subtotal = 1;
+
+  // Total discount amount.
+  common.v1.Money discount = 2;
+
+  // Total tax amount.
+  common.v1.Money tax = 3;
+
+  // Shipping cost.
+  common.v1.Money shipping = 4;
+
+  // Grand total.
+  common.v1.Money total = 5;
+
+  // Amount paid.
+  common.v1.Money amount_paid = 6;
+
+  // Amount refunded.
+  common.v1.Money amount_refunded = 7;
+
+  // Balance due.
+  common.v1.Money balance_due = 8;
+}
+
+// PaymentInfo contains payment information.
+message PaymentInfo {
+  // Payment method.
+  PaymentMethod method = 1;
+
+  // Payment status.
+  PaymentStatus status = 2;
+
+  // Payment gateway transaction ID.
+  string transaction_id = 3;
+
+  // Last 4 digits of card (if applicable).
+  string card_last_four = 4;
+
+  // Card brand (e.g., "Visa", "Mastercard").
+  string card_brand = 5;
+
+  // Payment timestamp.
+  google.protobuf.Timestamp paid_at = 6;
+
+  // Payment gateway.
+  string gateway = 7;
+}
+
+// FulfillmentInfo contains order fulfillment information.
+message FulfillmentInfo {
+  // Fulfillment status.
+  FulfillmentStatus status = 1;
+
+  // Shipping carrier.
+  string carrier = 2;
+
+  // Tracking number.
+  string tracking_number = 3;
+
+  // Tracking URL.
+  string tracking_url = 4;
+
+  // Shipped timestamp.
+  google.protobuf.Timestamp shipped_at = 5;
+
+  // Estimated delivery date.
+  google.protobuf.Timestamp estimated_delivery_at = 6;
+
+  // Actual delivery date.
+  google.protobuf.Timestamp delivered_at = 7;
+
+  // Shipping method (e.g., "Standard", "Express", "Overnight").
+  string shipping_method = 8;
+}
+
+// OrderHistoryEntry represents a change in order status.
+message OrderHistoryEntry {
+  // Entry ID.
+  string id = 1;
+
+  // Timestamp of the change.
+  google.protobuf.Timestamp timestamp = 2;
+
+  // Previous status.
+  OrderStatus previous_status = 3;
+
+  // New status.
+  OrderStatus new_status = 4;
+
+  // User who made the change.
+  string user_id = 5;
+
+  // Notes about the change.
+  string notes = 6;
+}
+
+// OrderStatus represents the overall status of an order.
+enum OrderStatus {
+  // Status is not specified.
+  ORDER_STATUS_UNSPECIFIED = 0;
+
+  // Order is pending (awaiting payment).
+  ORDER_STATUS_PENDING = 1;
+
+  // Payment received, order is being processed.
+  ORDER_STATUS_PROCESSING = 2;
+
+  // Order is on hold (payment issue, inventory issue, etc.).
+  ORDER_STATUS_ON_HOLD = 3;
+
+  // Order has been shipped.
+  ORDER_STATUS_SHIPPED = 4;
+
+  // Order has been delivered.
+  ORDER_STATUS_DELIVERED = 5;
+
+  // Order has been completed.
+  ORDER_STATUS_COMPLETED = 6;
+
+  // Order has been cancelled.
+  ORDER_STATUS_CANCELLED = 7;
+
+  // Order has been refunded.
+  ORDER_STATUS_REFUNDED = 8;
+
+  // Order has failed (payment declined, etc.).
+  ORDER_STATUS_FAILED = 9;
+}
+
+// PaymentMethod represents the payment method used.
+enum PaymentMethod {
+  // Payment method is not specified.
+  PAYMENT_METHOD_UNSPECIFIED = 0;
+
+  // Credit card.
+  PAYMENT_METHOD_CREDIT_CARD = 1;
+
+  // Debit card.
+  PAYMENT_METHOD_DEBIT_CARD = 2;
+
+  // PayPal.
+  PAYMENT_METHOD_PAYPAL = 3;
+
+  // Apple Pay.
+  PAYMENT_METHOD_APPLE_PAY = 4;
+
+  // Google Pay.
+  PAYMENT_METHOD_GOOGLE_PAY = 5;
+
+  // Bank transfer.
+  PAYMENT_METHOD_BANK_TRANSFER = 6;
+
+  // Cash on delivery.
+  PAYMENT_METHOD_CASH_ON_DELIVERY = 7;
+}
+
+// PaymentStatus represents the payment status.
+enum PaymentStatus {
+  // Payment status is not specified.
+  PAYMENT_STATUS_UNSPECIFIED = 0;
+
+  // Payment is pending.
+  PAYMENT_STATUS_PENDING = 1;
+
+  // Payment is authorized but not captured.
+  PAYMENT_STATUS_AUTHORIZED = 2;
+
+  // Payment has been captured/completed.
+  PAYMENT_STATUS_PAID = 3;
+
+  // Payment has failed.
+  PAYMENT_STATUS_FAILED = 4;
+
+  // Payment has been refunded.
+  PAYMENT_STATUS_REFUNDED = 5;
+
+  // Payment is partially refunded.
+  PAYMENT_STATUS_PARTIALLY_REFUNDED = 6;
+}
+
+// FulfillmentStatus represents the fulfillment status.
+enum FulfillmentStatus {
+  // Fulfillment status is not specified.
+  FULFILLMENT_STATUS_UNSPECIFIED = 0;
+
+  // Fulfillment is pending.
+  FULFILLMENT_STATUS_PENDING = 1;
+
+  // Items are being picked from inventory.
+  FULFILLMENT_STATUS_PICKING = 2;
+
+  // Items are being packed.
+  FULFILLMENT_STATUS_PACKING = 3;
+
+  // Order is ready to ship.
+  FULFILLMENT_STATUS_READY_TO_SHIP = 4;
+
+  // Order has been shipped.
+  FULFILLMENT_STATUS_SHIPPED = 5;
+
+  // Order is in transit.
+  FULFILLMENT_STATUS_IN_TRANSIT = 6;
+
+  // Order is out for delivery.
+  FULFILLMENT_STATUS_OUT_FOR_DELIVERY = 7;
+
+  // Order has been delivered.
+  FULFILLMENT_STATUS_DELIVERED = 8;
+
+  // Delivery failed.
+  FULFILLMENT_STATUS_DELIVERY_FAILED = 9;
+
+  // Order is being returned.
+  FULFILLMENT_STATUS_RETURNED = 10;
+}
+
+// ItemFulfillmentStatus represents the fulfillment status of an individual item.
+enum ItemFulfillmentStatus {
+  // Item fulfillment status is not specified.
+  ITEM_FULFILLMENT_STATUS_UNSPECIFIED = 0;
+
+  // Item fulfillment is pending.
+  ITEM_FULFILLMENT_STATUS_PENDING = 1;
+
+  // Item is fulfilled.
+  ITEM_FULFILLMENT_STATUS_FULFILLED = 2;
+
+  // Item is partially fulfilled.
+  ITEM_FULFILLMENT_STATUS_PARTIALLY_FULFILLED = 3;
+
+  // Item fulfillment has been cancelled.
+  ITEM_FULFILLMENT_STATUS_CANCELLED = 4;
+}
+
+// CreateOrderRequest creates a new order.
+message CreateOrderRequest {
+  // The order to create.
+  Order order = 1;
+
+  // Whether to process payment immediately.
+  bool process_payment = 2;
+}
+
+// CreateOrderResponse returns the created order.
+message CreateOrderResponse {
+  // The created order.
+  Order order = 1;
+
+  // Payment result (if processed).
+  PaymentResult payment_result = 2;
+}
+
+// PaymentResult contains the result of a payment processing attempt.
+message PaymentResult {
+  // Whether payment was successful.
+  bool success = 1;
+
+  // Transaction ID.
+  string transaction_id = 2;
+
+  // Error message (if failed).
+  string error_message = 3;
+}
+
+// GetOrderRequest retrieves an order.
+message GetOrderRequest {
+  // The order identifier.
+  oneof identifier {
+    // Order ID.
+    string order_id = 1;
+
+    // Order number.
+    string order_number = 2;
+  }
+}
+
+// GetOrderResponse returns the requested order.
+message GetOrderResponse {
+  // The requested order.
+  Order order = 1;
+}
+
+// UpdateOrderRequest updates an order.
+message UpdateOrderRequest {
+  // The order to update.
+  Order order = 1;
+}
+
+// UpdateOrderResponse returns the updated order.
+message UpdateOrderResponse {
+  // The updated order.
+  Order order = 1;
+}
+
+// CancelOrderRequest cancels an order.
+message CancelOrderRequest {
+  // The order ID to cancel.
+  string order_id = 1;
+
+  // Reason for cancellation.
+  string reason = 2;
+
+  // Whether to refund payment.
+  bool refund_payment = 3;
+}
+
+// CancelOrderResponse confirms cancellation.
+message CancelOrderResponse {
+  // The cancelled order.
+  Order order = 1;
+
+  // Refund result (if refunded).
+  RefundResult refund_result = 2;
+}
+
+// RefundResult contains the result of a refund.
+message RefundResult {
+  // Whether refund was successful.
+  bool success = 1;
+
+  // Refund transaction ID.
+  string transaction_id = 2;
+
+  // Amount refunded.
+  common.v1.Money amount = 3;
+
+  // Error message (if failed).
+  string error_message = 4;
+}
+
+// ListOrdersRequest lists orders with pagination.
+message ListOrdersRequest {
+  // Pagination parameters.
+  common.v1.Pagination pagination = 1;
+
+  // Filter by customer ID.
+  string customer_id = 2;
+
+  // Filter by status.
+  OrderStatus status = 3;
+
+  // Filter by date range.
+  DateRange date_range = 4;
+}
+
+// DateRange specifies a date range for filtering.
+message DateRange {
+  // Start date.
+  google.protobuf.Timestamp start = 1;
+
+  // End date.
+  google.protobuf.Timestamp end = 2;
+}
+
+// ListOrdersResponse returns a list of orders.
+message ListOrdersResponse {
+  // The list of orders.
+  repeated Order orders = 1;
+
+  // Pagination information.
+  common.v1.PageInfo page_info = 2;
+}
+
+// ProcessPaymentRequest processes payment for an order.
+message ProcessPaymentRequest {
+  // Order ID.
+  string order_id = 1;
+
+  // Payment method details.
+  PaymentMethodDetails payment_method = 2;
+}
+
+// PaymentMethodDetails contains payment method details.
+message PaymentMethodDetails {
+  // Payment method type.
+  PaymentMethod method = 1;
+
+  // Card token (for card payments).
+  string card_token = 2;
+
+  // External payment ID (for PayPal, etc.).
+  string external_payment_id = 3;
+}
+
+// ProcessPaymentResponse returns payment processing result.
+message ProcessPaymentResponse {
+  // Payment result.
+  PaymentResult result = 1;
+
+  // Updated order.
+  Order order = 2;
+}
+
+// UpdateOrderStatusRequest updates order status.
+message UpdateOrderStatusRequest {
+  // Order ID.
+  string order_id = 1;
+
+  // New status.
+  OrderStatus status = 2;
+
+  // Notes about the status change.
+  string notes = 3;
+}
+
+// UpdateOrderStatusResponse returns the updated order.
+message UpdateOrderStatusResponse {
+  // The updated order.
+  Order order = 1;
+}
+
+// TrackOrderRequest retrieves tracking information.
+message TrackOrderRequest {
+  // Order ID.
+  string order_id = 1;
+}
+
+// TrackOrderResponse returns tracking information.
+message TrackOrderResponse {
+  // Order fulfillment information.
+  FulfillmentInfo fulfillment_info = 1;
+
+  // Tracking events.
+  repeated TrackingEvent events = 2;
+}
+
+// TrackingEvent represents a tracking event.
+message TrackingEvent {
+  // Event timestamp.
+  google.protobuf.Timestamp timestamp = 1;
+
+  // Event description.
+  string description = 2;
+
+  // Event location.
+  string location = 3;
+
+  // Event status code.
+  string status_code = 4;
+}
+
+// StreamOrderUpdatesRequest subscribes to order updates.
+message StreamOrderUpdatesRequest {
+  // Order IDs to monitor (empty for all orders).
+  repeated string order_ids = 1;
+
+  // Customer ID to monitor all orders for a customer.
+  string customer_id = 2;
+}
+
+// OrderUpdate represents an order update event.
+message OrderUpdate {
+  // Order ID.
+  string order_id = 1;
+
+  // Previous status.
+  OrderStatus previous_status = 2;
+
+  // New status.
+  OrderStatus new_status = 3;
+
+  // Timestamp of the update.
+  google.protobuf.Timestamp timestamp = 4;
+
+  // Update details.
+  string details = 5;
+}
