@@ -12,8 +12,48 @@
         </a>
       </div>
 
-      <div class="flex items-center space-x-2">
-        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle theme">
+      <div class="flex items-center space-x-3">
+        <!-- Theme Selector -->
+        <div class="relative">
+          <button id="theme-selector-btn" class="theme-toggle flex items-center space-x-2" aria-label="Select color theme">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+            </svg>
+            <span class="hidden sm:inline text-sm font-medium">Theme</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          <div id="theme-selector-menu" class="hidden absolute right-0 mt-2 w-48 bg-white dark:bg-slate-800 rounded-lg shadow-xl border-2 border-gray-200 dark:border-slate-700 z-50">
+            <div class="py-2">
+              <button class="theme-option w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors" data-theme="default">
+                <span class="font-medium">Default</span>
+              </button>
+              <button class="theme-option w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors" data-theme="minimal">
+                <span class="font-medium">Minimal</span>
+              </button>
+              <button class="theme-option w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors" data-theme="high-contrast">
+                <span class="font-medium">High Contrast</span>
+              </button>
+              <button class="theme-option w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors" data-theme="ocean">
+                <span class="font-medium">Ocean</span>
+              </button>
+              <button class="theme-option w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors" data-theme="forest">
+                <span class="font-medium">Forest</span>
+              </button>
+              <button class="theme-option w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors" data-theme="sunset">
+                <span class="font-medium">Sunset</span>
+              </button>
+              <button class="theme-option w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors" data-theme="monochrome">
+                <span class="font-medium">Monochrome</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dark Mode Toggle -->
+        <button id="theme-toggle" class="theme-toggle" aria-label="Toggle dark mode">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
           </svg>

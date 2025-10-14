@@ -1,0 +1,44 @@
+# Example YAML theme file - Minimal Pink Theme
+name: custom-pink
+colors:
+  light:
+    background: "#fff5f7"
+    surface: "#ffffff"
+    primary: "#be123c"
+    secondary: "#e11d48"
+    text: "#be123c"
+    textSecondary: "#e11d48"
+    border: "#fecdd3"
+    accent: "#f43f5e"
+    accentHover: "#e11d48"
+    shadow: "rgba(244, 63, 94, 0.1)"
+  dark:
+    background: "#4c0519"
+    surface: "#881337"
+    primary: "#fff1f2"
+    secondary: "#fda4af"
+    text: "#fff1f2"
+    textSecondary: "#fda4af"
+    border: "#9f1239"
+    accent: "#fb7185"
+    accentHover: "#fda4af"
+    shadow: "rgba(251, 113, 133, 0.3)"
+
+typography:
+  fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif"
+  fontFamilyMono: "'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace"
+  fontSizeBase: "16px"
+  lineHeight: "1.6"
+
+spacing:
+  headerHeight: "4rem"
+  contentPadding: "2rem"
+  cardPadding: "1.5rem"
+
+components:
+  headerShadow: "0 1px 3px 0 rgba(244, 63, 94, 0.1), 0 1px 2px 0 rgba(244, 63, 94, 0.06)"
+  cardShadow: "0 1px 3px 0 rgba(244, 63, 94, 0.1), 0 1px 2px 0 rgba(244, 63, 94, 0.06)"
+  cardRadius: "0.5rem"
+  borderWidth: "1px"
+
+customCSS: ""

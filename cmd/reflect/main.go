@@ -14,7 +14,8 @@ import (
 func main() {
 	addr := flag.String("addr", ":8080", "listen address")
 	protoRoot := flag.String("proto-root", "", "root directory containing .proto files")
-	themeName := flag.String("theme", "default", "theme name (default, minimal, high-contrast)")
+	themeName := flag.String("theme", "default", "theme name (default, minimal, high-contrast, ocean, forest, sunset, monochrome)")
+	themeFile := flag.String("theme-file", "", "path to custom theme file (JSON or YAML)")
 	var protoIncludes []string
 	flag.Func("proto-include", "include path for proto imports (can be specified multiple times)", func(value string) error {
 		protoIncludes = append(protoIncludes, value)
@@ -37,8 +38,21 @@ func main() {
 	}
 
 	// Load theme
-	selectedTheme := theme.GetThemeByName(*themeName)
-	log.Printf("Using theme: %s", selectedTheme.Name)
+	var selectedTheme *theme.Theme
+	var err error
+
+	if *themeFile != "" {
+		// Load theme from file
+		selectedTheme, err = theme.LoadThemeFromFile(*themeFile)
+		if err != nil {
+			log.Fatalf("Failed to load theme from file %q: %v", *themeFile, err)
+		}
+		log.Printf("Loaded theme %q from file: %s", selectedTheme.Name, *themeFile)
+	} else {
+		// Load built-in theme
+		selectedTheme = theme.GetThemeByName(*themeName)
+		log.Printf("Using theme: %s", selectedTheme.Name)
+	}
 
 	h, err := server.NewWithTheme(reg, selectedTheme)
 	if err != nil {

@@ -1,23 +1,29 @@
-// Theme management for light/dark mode
+// Theme management for light/dark mode and color themes
 (function() {
   'use strict';
-  
+
   const THEME_KEY = 'reflect-theme';
+  const COLOR_THEME_KEY = 'reflect-color-theme';
   const THEME_LIGHT = 'light';
   const THEME_DARK = 'dark';
-  
-  // Get current theme from localStorage or system preference
+
+  // Get current dark/light theme from localStorage or system preference
   function getCurrentTheme() {
     const stored = localStorage.getItem(THEME_KEY);
     if (stored === THEME_LIGHT || stored === THEME_DARK) {
       return stored;
     }
-    
+
     // Fall back to system preference
     return window.matchMedia('(prefers-color-scheme: dark)').matches ? THEME_DARK : THEME_LIGHT;
   }
-  
-  // Apply theme to document
+
+  // Get current color theme from localStorage
+  function getCurrentColorTheme() {
+    return localStorage.getItem(COLOR_THEME_KEY) || null;
+  }
+
+  // Apply dark/light theme to document
   function applyTheme(theme) {
     if (theme === THEME_DARK) {
       document.documentElement.classList.add('dark');
@@ -25,15 +31,15 @@
       document.documentElement.classList.remove('dark');
     }
   }
-  
+
   // Update theme toggle button
   function updateToggleButton(theme) {
     const toggle = document.getElementById('theme-toggle');
     if (!toggle) return;
-    
+
     const icon = toggle.querySelector('svg');
     if (!icon) return;
-    
+
     if (theme === THEME_DARK) {
       // Show sun icon for switching to light mode
       icon.innerHTML = `
@@ -48,29 +54,96 @@
       toggle.setAttribute('aria-label', 'Switch to dark mode');
     }
   }
-  
-  // Toggle theme
+
+  // Toggle dark/light theme
   function toggleTheme() {
     const current = getCurrentTheme();
     const newTheme = current === THEME_LIGHT ? THEME_DARK : THEME_LIGHT;
-    
+
     localStorage.setItem(THEME_KEY, newTheme);
     applyTheme(newTheme);
     updateToggleButton(newTheme);
   }
-  
+
+  // Change color theme
+  function changeColorTheme(themeName) {
+    localStorage.setItem(COLOR_THEME_KEY, themeName);
+
+    // Reload page to apply new theme
+    window.location.reload();
+  }
+
+  // Initialize theme selector dropdown
+  function initThemeSelector() {
+    const btn = document.getElementById('theme-selector-btn');
+    const menu = document.getElementById('theme-selector-menu');
+
+    if (!btn || !menu) return;
+
+    // Toggle dropdown
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      menu.classList.toggle('hidden');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', function() {
+      menu.classList.add('hidden');
+    });
+
+    menu.addEventListener('click', function(e) {
+      e.stopPropagation();
+    });
+
+    // Handle theme selection
+    const options = menu.querySelectorAll('.theme-option');
+    const currentColorTheme = getCurrentColorTheme();
+
+    options.forEach(function(option) {
+      const themeName = option.getAttribute('data-theme');
+
+      // Highlight current theme
+      if (themeName === currentColorTheme || (!currentColorTheme && themeName === 'default')) {
+        option.classList.add('bg-blue-50', 'dark:bg-blue-900/30');
+      }
+
+      option.addEventListener('click', function() {
+        changeColorTheme(themeName);
+      });
+    });
+  }
+
+  // Check if user has a stored color theme preference
+  function checkColorThemePreference() {
+    const storedColorTheme = getCurrentColorTheme();
+    const urlParams = new URLSearchParams(window.location.search);
+
+    // If user has a theme preference and we're not already on that theme
+    if (storedColorTheme && !urlParams.get('theme')) {
+      // Redirect to URL with theme parameter
+      const currentPath = window.location.pathname;
+      window.location.href = currentPath + '?theme=' + storedColorTheme;
+    }
+  }
+
   // Initialize theme on page load
   function initTheme() {
     const theme = getCurrentTheme();
     applyTheme(theme);
     updateToggleButton(theme);
-    
+
     // Add click handler to toggle button
     const toggle = document.getElementById('theme-toggle');
     if (toggle) {
       toggle.addEventListener('click', toggleTheme);
     }
-    
+
+    // Initialize theme selector
+    initThemeSelector();
+
+    // Check color theme preference
+    // checkColorThemePreference(); // Disabled for now - would need server-side support
+
     // Listen for system theme changes
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e) {
       // Only update if no explicit preference is stored
@@ -81,7 +154,7 @@
       }
     });
   }
-  
+
   // Initialize when DOM is ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initTheme);

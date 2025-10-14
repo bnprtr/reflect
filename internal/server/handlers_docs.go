@@ -27,11 +27,16 @@ func (s *Server) mergeData(data map[string]any) map[string]any {
 }
 
 func (s *Server) routes() {
+	// Documentation routes
 	s.router.Get("/", s.handleHome())
 	s.router.Get("/services/{fullName}", s.handleServiceDetail())
 	s.router.Get("/methods/*", s.handleMethodDetail())
 	s.router.Get("/types/{fullName}", s.handleTypeDetail())
 	s.router.Get("/partial/types/*", s.handleTypePartial())
+
+	// Theme API routes
+	s.router.Get("/api/themes", s.handleThemesList())
+	s.router.Get("/api/themes/current", s.handleCurrentTheme())
 }
 
 func (s *Server) handleHome() http.HandlerFunc {
