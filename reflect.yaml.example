@@ -1,0 +1,6 @@
+# Reflect configuration example
+# This file will be populated in Milestone 2
+environments: []
+headerAllowlist: []
+maxRequestBodyBytes: 1048576
+requestTimeoutSeconds: 15

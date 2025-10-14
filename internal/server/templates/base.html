@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{block "title" .}}{{.Title}}{{end}}</title>
+    <link rel="stylesheet" href="/static/app.css" />
+  </head>
+  <body class="min-h-screen bg-gray-50 text-gray-900">
+    <main class="container mx-auto p-6">
+      {{block "content" .}}{{end}}
+    </main>
+  </body>
+</html>
