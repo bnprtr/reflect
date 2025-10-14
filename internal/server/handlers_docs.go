@@ -9,6 +9,23 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
+// baseData returns common template data with theme configuration
+func (s *Server) baseData() map[string]any {
+	return map[string]any{
+		"ThemeVars": s.theme.ToCSSVariables(),
+		"ThemeName": s.theme.Name,
+	}
+}
+
+// mergeData merges additional data with base theme data
+func (s *Server) mergeData(data map[string]any) map[string]any {
+	base := s.baseData()
+	for k, v := range data {
+		base[k] = v
+	}
+	return base
+}
+
 func (s *Server) routes() {
 	s.router.Get("/", s.handleHome())
 	s.router.Get("/services/{fullName}", s.handleServiceDetail())
@@ -25,10 +42,10 @@ func (s *Server) handleHome() http.HandlerFunc {
 			return
 		}
 
-		data := map[string]any{
+		data := s.mergeData(map[string]any{
 			"Title":    "Reflect",
 			"Services": index.Services,
-		}
+		})
 
 		err = s.templates.ExecuteTemplate(w, "home.html", data)
 		if err != nil {
@@ -52,12 +69,12 @@ func (s *Server) handleServiceDetail() http.HandlerFunc {
 			return
 		}
 
-		data := map[string]any{
+		data := s.mergeData(map[string]any{
 			"Title":          fmt.Sprintf("Service: %s", serviceView.Name),
 			"Service":        serviceView,
 			"Services":       []docs.ServiceSummary{{Name: serviceView.Name, FullName: serviceView.FullName, Package: serviceView.Package, Comment: serviceView.Comment}},
 			"CurrentService": serviceView.FullName,
-		}
+		})
 		err = s.templates.ExecuteTemplate(w, "service_detail.html", data)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Template error: %v", err), http.StatusInternalServerError)
@@ -87,11 +104,11 @@ func (s *Server) handleMethodDetail() http.HandlerFunc {
 			serviceName = parts[0]
 		}
 
-		data := map[string]any{
+		data := s.mergeData(map[string]any{
 			"Title":       fmt.Sprintf("Method: %s", methodView.Name),
 			"Method":      methodView,
 			"ServiceName": serviceName,
-		}
+		})
 		err = s.templates.ExecuteTemplate(w, "method_detail.html", data)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Template error: %v", err), http.StatusInternalServerError)
@@ -111,20 +128,20 @@ func (s *Server) handleTypeDetail() http.HandlerFunc {
 		// Try to find as message first, then as enum
 		messageView, err := docs.BuildMessageView(s.registry, fullName)
 		if err == nil {
-			data := map[string]any{
+			data := s.mergeData(map[string]any{
 				"Title":   fmt.Sprintf("Message: %s", messageView.Name),
 				"Message": messageView,
-			}
+			})
 			_ = s.templates.ExecuteTemplate(w, "type_detail.html", data)
 			return
 		}
 
 		enumView, err := docs.BuildEnumView(s.registry, fullName)
 		if err == nil {
-			data := map[string]any{
+			data := s.mergeData(map[string]any{
 				"Title": fmt.Sprintf("Enum: %s", enumView.Name),
 				"Enum":  enumView,
-			}
+			})
 			_ = s.templates.ExecuteTemplate(w, "type_detail.html", data)
 			return
 		}

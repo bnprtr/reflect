@@ -8,11 +8,13 @@ import (
 
 	"github.com/bnprtr/reflect/internal/descriptor"
 	"github.com/bnprtr/reflect/internal/server"
+	"github.com/bnprtr/reflect/internal/server/theme"
 )
 
 func main() {
 	addr := flag.String("addr", ":8080", "listen address")
 	protoRoot := flag.String("proto-root", "", "root directory containing .proto files")
+	themeName := flag.String("theme", "default", "theme name (default, minimal, high-contrast)")
 	var protoIncludes []string
 	flag.Func("proto-include", "include path for proto imports (can be specified multiple times)", func(value string) error {
 		protoIncludes = append(protoIncludes, value)
@@ -34,7 +36,11 @@ func main() {
 		log.Printf("Loaded proto files from %q", *protoRoot)
 	}
 
-	h, err := server.New(reg)
+	// Load theme
+	selectedTheme := theme.GetThemeByName(*themeName)
+	log.Printf("Using theme: %s", selectedTheme.Name)
+
+	h, err := server.NewWithTheme(reg, selectedTheme)
 	if err != nil {
 		log.Fatal(err)
 	}

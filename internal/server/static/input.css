@@ -3,49 +3,175 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    /* Light mode colors - defaults */
+    --color-bg: #f9fafb;
+    --color-surface: #ffffff;
+    --color-primary: #111827;
+    --color-secondary: #6b7280;
+    --color-text: #111827;
+    --color-text-secondary: #6b7280;
+    --color-border: #e5e7eb;
+    --color-accent: #2563eb;
+    --color-accent-hover: #1d4ed8;
+    --color-shadow: rgba(0, 0, 0, 0.1);
+
+    /* Typography */
+    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    --font-family-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
+    --font-size-base: 16px;
+    --line-height: 1.6;
+
+    /* Spacing */
+    --header-height: 4rem;
+    --content-padding: 2rem;
+    --card-padding: 1.5rem;
+
+    /* Components */
+    --header-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    --card-radius: 0.5rem;
+    --border-width: 1px;
+  }
+
+  .dark {
+    /* Dark mode colors */
+    --color-bg: #0f172a;
+    --color-surface: #1e293b;
+    --color-primary: #f1f5f9;
+    --color-secondary: #94a3b8;
+    --color-text: #f1f5f9;
+    --color-text-secondary: #94a3b8;
+    --color-border: #334155;
+    --color-accent: #3b82f6;
+    --color-accent-hover: #60a5fa;
+    --color-shadow: rgba(0, 0, 0, 0.5);
+  }
+
   html {
-    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    font-family: var(--font-family);
+    font-size: var(--font-size-base);
+    line-height: var(--line-height);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  code, pre {
+    font-family: var(--font-family-mono);
   }
 }
 
 @layer components {
+  /* Header and Navigation */
+  .site-header {
+    height: var(--header-height);
+    box-shadow: var(--header-shadow);
+    @apply bg-white dark:bg-slate-800 border-b-2 border-gray-200 dark:border-slate-700 sticky top-0 z-50 backdrop-blur-sm bg-opacity-95 dark:bg-opacity-95;
+  }
+
   .theme-toggle {
-    @apply inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800 transition-colors duration-200;
+    @apply inline-flex items-center justify-center p-2.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-slate-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800;
   }
-  
+
+  /* Cards */
+  .card {
+    border-radius: var(--card-radius);
+    box-shadow: var(--card-shadow);
+    @apply bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 overflow-hidden;
+  }
+
+  .card-header {
+    padding: var(--card-padding);
+    @apply border-b-2 border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900;
+  }
+
+  .card-body {
+    padding: var(--card-padding);
+  }
+
+  .card-hover {
+    @apply hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-all duration-200 hover:shadow-md;
+  }
+
+  /* Code Blocks */
   .code-block {
-    @apply relative bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden;
+    @apply relative bg-slate-50 dark:bg-slate-950 border-2 border-gray-300 dark:border-slate-700 rounded-lg overflow-hidden font-mono;
   }
-  
+
   .code-block pre {
-    @apply p-4 overflow-x-auto text-sm;
+    @apply p-4 overflow-x-auto text-sm leading-relaxed;
   }
-  
+
   .code-block .copy-btn {
-    @apply absolute top-2 right-2 px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors duration-200;
+    @apply absolute top-2 right-2 px-3 py-1.5 text-xs font-medium bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 border border-gray-300 dark:border-slate-600 transition-all duration-200 shadow-sm;
   }
-  
+
+  /* Breadcrumbs */
   .breadcrumb {
-    @apply flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400;
+    @apply flex items-center space-x-2 text-sm font-medium text-gray-600 dark:text-gray-400;
   }
-  
+
   .breadcrumb a {
-    @apply hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-200;
+    @apply hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 underline decoration-transparent hover:decoration-current underline-offset-4;
   }
-  
+
+  /* Sidebar */
   .sidebar {
-    @apply hidden lg:block lg:flex-shrink-0 lg:w-64 lg:pl-8;
+    @apply hidden lg:block lg:flex-shrink-0 lg:w-64 lg:border-l-2 lg:border-gray-200 lg:dark:border-slate-700 lg:pl-8 lg:ml-8;
   }
-  
+
   .sidebar-nav {
     @apply space-y-1;
   }
-  
+
   .sidebar-nav a {
-    @apply block px-3 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-900 dark:hover:text-white transition-colors duration-200;
+    @apply block px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white transition-all duration-200 border-l-4 border-transparent hover:border-blue-500;
   }
-  
+
   .sidebar-nav a.active {
-    @apply bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white;
+    @apply bg-blue-50 dark:bg-slate-800 text-blue-700 dark:text-blue-400 border-l-4 border-blue-600 dark:border-blue-500 font-semibold;
+  }
+
+  /* Badges */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border;
+  }
+
+  .badge-deprecated {
+    @apply bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800;
+  }
+
+  .badge-streaming {
+    @apply bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800;
+  }
+
+  /* Links */
+  .link-primary {
+    @apply text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors duration-200 underline decoration-transparent hover:decoration-current underline-offset-2;
+  }
+
+  /* Typography enhancements */
+  .heading-1 {
+    @apply text-4xl font-bold text-gray-900 dark:text-white tracking-tight;
+  }
+
+  .heading-2 {
+    @apply text-2xl font-bold text-gray-900 dark:text-white tracking-tight;
+  }
+
+  .heading-3 {
+    @apply text-xl font-semibold text-gray-900 dark:text-white;
+  }
+
+  .text-secondary {
+    @apply text-gray-600 dark:text-gray-400;
+  }
+
+  .text-muted {
+    @apply text-gray-500 dark:text-gray-500;
   }
 }

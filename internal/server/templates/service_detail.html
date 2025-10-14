@@ -1,91 +1,92 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{.Title}}</title>
+    <meta name="description" content="Documentation for {{.Service.Name}} protobuf service">
     <link rel="stylesheet" href="/static/app.css" />
     <script src="/static/theme.js"></script>
   </head>
-  <body class="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
+  <body class="min-h-screen bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-gray-100 antialiased transition-colors duration-200">
     {{template "header.html" .}}
-    
-    <div class="flex">
+
+    <div class="flex pt-0">
       {{template "sidebar.html" .}}
-      
+
       <main class="flex-1 min-w-0">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <nav class="breadcrumb mb-6">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 py-8 lg:py-12">
+          <nav class="breadcrumb mb-8">
             <a href="/">Home</a>
-            <span>→</span>
-            <span>{{.Service.Name}}</span>
+            <span class="text-gray-400 dark:text-gray-600">→</span>
+            <span class="font-semibold text-gray-900 dark:text-white">{{.Service.Name}}</span>
           </nav>
-          
-          <div class="max-w-4xl">
-            <div class="mb-8">
-              <h1 class="text-3xl font-bold text-gray-900 dark:text-white">{{.Service.Name}}</h1>
-              <p class="text-lg text-gray-600 dark:text-gray-400 mt-2">{{.Service.FullName}}</p>
-              
+
+          <div class="max-w-5xl">
+            <div class="mb-10">
+              <h1 class="heading-1 mb-3">{{.Service.Name}}</h1>
+              <p class="text-lg font-mono text-muted mb-4">{{.Service.FullName}}</p>
+
               {{if .Service.Comment}}
-                <div class="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+                <div class="mt-6 p-5 bg-blue-50 dark:bg-blue-950/50 border-2 border-blue-200 dark:border-blue-900 rounded-lg">
                   <div class="prose prose-sm dark:prose-invert max-w-none">
-                    <p class="text-gray-700 dark:text-gray-300">{{.Service.Comment}}</p>
+                    <p class="text-gray-800 dark:text-gray-200 leading-relaxed">{{.Service.Comment}}</p>
                   </div>
                 </div>
               {{end}}
             </div>
 
             {{if .Service.Methods}}
-              <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
-                  <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Methods</h2>
+              <div class="card">
+                <div class="card-header">
+                  <h2 class="heading-2">Methods</h2>
+                  <p class="text-sm text-muted mt-1">{{len .Service.Methods}} method{{if ne (len .Service.Methods) 1}}s{{end}} available</p>
                 </div>
-                <div class="divide-y divide-gray-200 dark:divide-gray-700">
+                <div class="divide-y-2 divide-gray-200 dark:divide-slate-700">
                   {{range .Service.Methods}}
-                    <div class="px-6 py-4 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-200">
+                    <div class="card-body card-hover">
                       <div class="flex items-start justify-between">
                         <div class="flex-1">
-                          <h3 class="text-lg font-medium text-gray-900 dark:text-white">
-                            <a href="/methods/{{.FullName}}" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200">
-                              {{.Name}}
-                            </a>
+                          <div class="flex items-center gap-3 mb-3">
+                            <h3 class="heading-3">
+                              <a href="/methods/{{.FullName}}" class="link-primary">
+                                {{.Name}}
+                              </a>
+                            </h3>
                             {{if .Deprecated}}
-                              <span class="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200">
+                              <span class="badge badge-deprecated">
                                 Deprecated
                               </span>
                             {{end}}
-                          </h3>
-                          
-                          <div class="mt-2 flex items-center space-x-4 text-sm text-gray-600 dark:text-gray-400">
-                            <span>
-                              <span class="font-medium">Input:</span>
-                              <a href="/types/{{.InputType}}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200">{{.InputType}}</a>
-                            </span>
-                            <span>→</span>
-                            <span>
-                              <span class="font-medium">Output:</span>
-                              <a href="/types/{{.OutputType}}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200">{{.OutputType}}</a>
-                            </span>
-                          </div>
-                          
-                          {{if or .ClientStreaming .ServerStreaming}}
-                            <div class="mt-2 flex items-center space-x-2">
+                            {{if or .ClientStreaming .ServerStreaming}}
                               {{if .ClientStreaming}}
-                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                                <span class="badge badge-streaming">
                                   Client Streaming
                                 </span>
                               {{end}}
                               {{if .ServerStreaming}}
-                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200">
+                                <span class="badge badge-streaming">
                                   Server Streaming
                                 </span>
                               {{end}}
-                            </div>
-                          {{end}}
-                          
+                            {{end}}
+                          </div>
+
+                          <div class="flex items-center gap-3 text-sm text-secondary mb-3 font-mono">
+                            <span class="flex items-center gap-2">
+                              <span class="font-semibold text-gray-700 dark:text-gray-300">Input:</span>
+                              <a href="/types/{{.InputType}}" class="link-primary">{{.InputType}}</a>
+                            </span>
+                            <span class="text-gray-400 dark:text-gray-600">→</span>
+                            <span class="flex items-center gap-2">
+                              <span class="font-semibold text-gray-700 dark:text-gray-300">Output:</span>
+                              <a href="/types/{{.OutputType}}" class="link-primary">{{.OutputType}}</a>
+                            </span>
+                          </div>
+
                           {{if .Comment}}
-                            <div class="mt-2 prose prose-sm dark:prose-invert max-w-none">
-                              <p class="text-gray-700 dark:text-gray-300">{{.Comment}}</p>
+                            <div class="prose prose-sm dark:prose-invert max-w-none">
+                              <p class="text-secondary leading-relaxed">{{.Comment}}</p>
                             </div>
                           {{end}}
                         </div>
@@ -95,9 +96,14 @@
                 </div>
               </div>
             {{else}}
-              <div class="text-center py-12">
-                <h2 class="text-xl font-medium text-gray-900 dark:text-white mb-2">No methods found</h2>
-                <p class="text-gray-600 dark:text-gray-400">This service doesn't have any methods defined.</p>
+              <div class="card">
+                <div class="card-body text-center py-16">
+                  <svg class="mx-auto h-16 w-16 text-gray-400 dark:text-gray-600 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <h2 class="heading-2 mb-2">No methods found</h2>
+                  <p class="text-secondary">This service doesn't have any methods defined.</p>
+                </div>
               </div>
             {{end}}
           </div>

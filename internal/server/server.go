@@ -8,6 +8,7 @@ import (
 	"text/template"
 
 	"github.com/bnprtr/reflect/internal/descriptor"
+	"github.com/bnprtr/reflect/internal/server/theme"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -21,9 +22,14 @@ type Server struct {
 	router    *chi.Mux
 	templates *template.Template
 	registry  *descriptor.Registry
+	theme     *theme.Theme
 }
 
 func New(registry *descriptor.Registry) (http.Handler, error) {
+	return NewWithTheme(registry, theme.GetDefaultTheme())
+}
+
+func NewWithTheme(registry *descriptor.Registry, themeConfig *theme.Theme) (http.Handler, error) {
 	t, err := template.New("").Funcs(template.FuncMap{
 		"contains": func(s, substr string) bool {
 			return strings.Contains(s, substr)
@@ -38,7 +44,7 @@ func New(registry *descriptor.Registry) (http.Handler, error) {
 	staticSub, _ := fs.Sub(staticFS, "static")
 	r.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.FS(staticSub))))
 
-	s := &Server{router: r, templates: t, registry: registry}
+	s := &Server{router: r, templates: t, registry: registry, theme: themeConfig}
 	s.routes()
 	return s.router, nil
 }
