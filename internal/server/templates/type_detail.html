@@ -1,10 +1,18 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="scroll-smooth">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{.Title}}</title>
     <link rel="stylesheet" href="/static/app.css" />
+    {{if .ThemeVars}}
+    <style>
+      :root {
+        {{range $key, $value := .ThemeVars}}{{$key}}: {{$value}};
+        {{end}}
+      }
+    </style>
+    {{end}}
     <script src="/static/theme.js"></script>
   </head>
   <body class="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">

@@ -69,10 +69,17 @@ func (s *Server) handleServiceDetail() http.HandlerFunc {
 			return
 		}
 
+		// Get all services for sidebar navigation
+		index, err := docs.BuildIndex(s.registry)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to build index: %v", err), http.StatusInternalServerError)
+			return
+		}
+
 		data := s.mergeData(map[string]any{
 			"Title":          fmt.Sprintf("Service: %s", serviceView.Name),
 			"Service":        serviceView,
-			"Services":       []docs.ServiceSummary{{Name: serviceView.Name, FullName: serviceView.FullName, Package: serviceView.Package, Comment: serviceView.Comment}},
+			"Services":       index.Services,
 			"CurrentService": serviceView.FullName,
 		})
 		err = s.templates.ExecuteTemplate(w, "service_detail.html", data)
@@ -104,10 +111,19 @@ func (s *Server) handleMethodDetail() http.HandlerFunc {
 			serviceName = parts[0]
 		}
 
+		// Get all services for sidebar navigation
+		index, err := docs.BuildIndex(s.registry)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to build index: %v", err), http.StatusInternalServerError)
+			return
+		}
+
 		data := s.mergeData(map[string]any{
-			"Title":       fmt.Sprintf("Method: %s", methodView.Name),
-			"Method":      methodView,
-			"ServiceName": serviceName,
+			"Title":          fmt.Sprintf("Method: %s", methodView.Name),
+			"Method":         methodView,
+			"ServiceName":    serviceName,
+			"Services":       index.Services,
+			"CurrentService": serviceName,
 		})
 		err = s.templates.ExecuteTemplate(w, "method_detail.html", data)
 		if err != nil {
@@ -125,12 +141,20 @@ func (s *Server) handleTypeDetail() http.HandlerFunc {
 			return
 		}
 
+		// Get all services for sidebar navigation
+		index, err := docs.BuildIndex(s.registry)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to build index: %v", err), http.StatusInternalServerError)
+			return
+		}
+
 		// Try to find as message first, then as enum
 		messageView, err := docs.BuildMessageView(s.registry, fullName)
 		if err == nil {
 			data := s.mergeData(map[string]any{
-				"Title":   fmt.Sprintf("Message: %s", messageView.Name),
-				"Message": messageView,
+				"Title":    fmt.Sprintf("Message: %s", messageView.Name),
+				"Message":  messageView,
+				"Services": index.Services,
 			})
 			_ = s.templates.ExecuteTemplate(w, "type_detail.html", data)
 			return
@@ -139,8 +163,9 @@ func (s *Server) handleTypeDetail() http.HandlerFunc {
 		enumView, err := docs.BuildEnumView(s.registry, fullName)
 		if err == nil {
 			data := s.mergeData(map[string]any{
-				"Title": fmt.Sprintf("Enum: %s", enumView.Name),
-				"Enum":  enumView,
+				"Title":    fmt.Sprintf("Enum: %s", enumView.Name),
+				"Enum":     enumView,
+				"Services": index.Services,
 			})
 			_ = s.templates.ExecuteTemplate(w, "type_detail.html", data)
 			return
