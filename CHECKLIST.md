@@ -5,7 +5,7 @@ This checklist breaks down the implementation of the Reflect project into phases
 ## Milestone 1: Core Docs & Protobuf Ingestion
 
 - [x] **Project Skeleton**: Create `cmd/reflect`, all `internal` packages, set up the Chi router, and configure `go:embed` for templates and static assets.
-- [ ] **Protobuf Parsing**: Implement the descriptor loader and parser. Support loading from a directory, file uploads, and pasted text. This will populate the `DescriptorRegistry`.
+- [x] **Protobuf Parsing**: Implement the descriptor loader and parser. Support loading from a directory, file uploads, and pasted text. This will populate the `DescriptorRegistry`.
 - [ ] **Doc Rendering**: Build the view models and HTML templates for rendering services, methods, messages, and enums. Use HTMX for any partial page updates.
 - [ ] **Example Generation**: Implement the logic to generate example JSON request bodies for any given message type.
 - [ ] **Search**: Add a lightweight search feature to find services, methods, and messages.

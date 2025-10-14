@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package shared.v1;
+
+option go_package = "github.com/bnprtr/reflect/internal/descriptor/testdata/import/shared";
+
+// CommonMessage is shared across services.
+message CommonMessage {
+  // ID is a unique identifier.
+  string id = 1;
+  
+  // Name is a human-readable name.
+  string name = 2;
+  
+  // Tags are arbitrary key-value pairs.
+  map<string, string> tags = 3;
+}
+
+// ErrorDetails provides detailed error information.
+message ErrorDetails {
+  // Code is the error code.
+  string code = 1;
+  
+  // Message is the error message.
+  string message = 2;
+  
+  // Details are additional error details.
+  repeated string details = 3;
+}

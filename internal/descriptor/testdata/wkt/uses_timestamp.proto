@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package wkt.v1;
+
+option go_package = "github.com/bnprtr/reflect/internal/descriptor/testdata/wkt";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/duration.proto";
+
+// TimestampService demonstrates usage of well-known types.
+service TimestampService {
+  // GetCurrentTime returns the current timestamp.
+  rpc GetCurrentTime(GetCurrentTimeRequest) returns (GetCurrentTimeResponse);
+  
+  // CalculateDuration calculates the duration between two timestamps.
+  rpc CalculateDuration(CalculateDurationRequest) returns (CalculateDurationResponse);
+}
+
+// GetCurrentTimeRequest is empty for getting current time.
+message GetCurrentTimeRequest {
+  // Optional timezone for the response.
+  string timezone = 1;
+}
+
+// GetCurrentTimeResponse contains the current timestamp.
+message GetCurrentTimeResponse {
+  // The current timestamp.
+  google.protobuf.Timestamp timestamp = 1;
+  
+  // The timezone used.
+  string timezone = 2;
+}
+
+// CalculateDurationRequest contains two timestamps.
+message CalculateDurationRequest {
+  // The start timestamp.
+  google.protobuf.Timestamp start = 1;
+  
+  // The end timestamp.
+  google.protobuf.Timestamp end = 2;
+}
+
+// CalculateDurationResponse contains the calculated duration.
+message CalculateDurationResponse {
+  // The duration between the timestamps.
+  google.protobuf.Duration duration = 1;
+  
+  // Whether the duration is valid (end > start).
+  bool valid = 2;
+}

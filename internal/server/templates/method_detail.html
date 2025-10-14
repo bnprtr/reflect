@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{.Title}}</title>
+    <link rel="stylesheet" href="/static/app.css" />
+  </head>
+  <body class="min-h-screen bg-gray-50 text-gray-900">
+    <main class="container mx-auto p-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="mb-6">
+      <nav class="text-sm text-gray-500 mb-4">
+        <a href="/" class="hover:text-gray-700">← Back to Services</a>
+      </nav>
+      
+      <h1 class="text-3xl font-bold text-gray-900">{{.Method.Name}}</h1>
+      <p class="text-lg text-gray-600 mt-2">{{.Method.FullName}}</p>
+      
+      {{if .Method.Deprecated}}
+        <div class="mt-4 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+          Deprecated
+        </div>
+      {{end}}
+      
+      {{if or .Method.ClientStreaming .Method.ServerStreaming}}
+        <div class="mt-4 flex items-center space-x-2">
+          {{if .Method.ClientStreaming}}
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+              Client Streaming
+            </span>
+          {{end}}
+          {{if .Method.ServerStreaming}}
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+              Server Streaming
+            </span>
+          {{end}}
+        </div>
+      {{end}}
+      
+      {{if .Method.Comment}}
+        <div class="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <p class="text-gray-700">{{.Method.Comment}}</p>
+        </div>
+      {{end}}
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h2 class="text-lg font-semibold text-gray-900">Input Type</h2>
+        </div>
+        <div class="px-6 py-4">
+          <a href="/types/{{.Method.InputType}}" class="text-lg font-medium text-blue-600 hover:text-blue-800">
+            {{.Method.InputType}}
+          </a>
+          <div class="mt-2">
+            <button 
+              hx-get="/partial/types/{{.Method.InputType}}" 
+              hx-target="#input-type-details" 
+              hx-swap="innerHTML"
+              class="text-sm text-gray-600 hover:text-gray-800 underline">
+              View Details
+            </button>
+          </div>
+          <div id="input-type-details" class="mt-4"></div>
+        </div>
+      </div>
+
+      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+        <div class="px-6 py-4 border-b border-gray-200">
+          <h2 class="text-lg font-semibold text-gray-900">Output Type</h2>
+        </div>
+        <div class="px-6 py-4">
+          <a href="/types/{{.Method.OutputType}}" class="text-lg font-medium text-blue-600 hover:text-blue-800">
+            {{.Method.OutputType}}
+          </a>
+          <div class="mt-2">
+            <button 
+              hx-get="/partial/types/{{.Method.OutputType}}" 
+              hx-target="#output-type-details" 
+              hx-swap="innerHTML"
+              class="text-sm text-gray-600 hover:text-gray-800 underline">
+              View Details
+            </button>
+          </div>
+          <div id="output-type-details" class="mt-4"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200">
+      <div class="px-6 py-4 border-b border-gray-200">
+        <h2 class="text-lg font-semibold text-gray-900">Example Request</h2>
+      </div>
+      <div class="px-6 py-4">
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+          <p class="text-gray-600 text-sm">Example JSON generation will be implemented in the next phase.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    </main>
+  </body>
+</html>

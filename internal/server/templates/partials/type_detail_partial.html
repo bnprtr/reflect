@@ -1,0 +1,45 @@
+{{if .Message}}
+  <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+    <h3 class="text-sm font-medium text-gray-900 mb-2">{{.Message.Name}}</h3>
+    {{if .Message.Comment}}
+      <p class="text-sm text-gray-600 mb-2">{{.Message.Comment}}</p>
+    {{end}}
+    {{if .Message.Fields}}
+      <div class="space-y-1">
+        {{range .Message.Fields}}
+          <div class="text-xs text-gray-500">
+            <span class="font-medium">{{.Name}}</span>
+            {{if .Label}}<span class="text-gray-400">({{.Label}})</span>{{end}}
+            <span class="text-gray-400">:</span>
+            {{if or (contains .Type ".") (eq .Type "message") (eq .Type "enum")}}
+              <a href="/types/{{.Type}}" class="text-blue-600 hover:text-blue-800">{{.Type}}</a>
+            {{else}}
+              {{.Type}}
+            {{end}}
+            {{if .Comment}}<span class="text-gray-400">// {{.Comment}}</span>{{end}}
+          </div>
+        {{end}}
+      </div>
+    {{end}}
+  </div>
+{{end}}
+
+{{if .Enum}}
+  <div class="bg-gray-50 border border-gray-200 rounded-lg p-4">
+    <h3 class="text-sm font-medium text-gray-900 mb-2">{{.Enum.Name}}</h3>
+    {{if .Enum.Comment}}
+      <p class="text-sm text-gray-600 mb-2">{{.Enum.Comment}}</p>
+    {{end}}
+    {{if .Enum.Values}}
+      <div class="space-y-1">
+        {{range .Enum.Values}}
+          <div class="text-xs text-gray-500">
+            <span class="font-medium">{{.Name}}</span>
+            <span class="text-gray-400">= {{.Number}}</span>
+            {{if .Comment}}<span class="text-gray-400">// {{.Comment}}</span>{{end}}
+          </div>
+        {{end}}
+      </div>
+    {{end}}
+  </div>
+{{end}}

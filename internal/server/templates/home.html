@@ -1,6 +1,27 @@
-{{template "base.html" .}}
-{{define "title"}}Reflect{{end}}
-{{define "content"}}
-  <h1 class="text-2xl font-semibold">Reflect</h1>
-  <p class="mt-2">Project skeleton is running.</p>
-{{end}}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{.Title}}</title>
+    <link rel="stylesheet" href="/static/app.css" />
+  </head>
+  <body class="min-h-screen bg-gray-50 text-gray-900">
+    <main class="container mx-auto p-6">
+      <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-900 mb-8">API Documentation</h1>
+        
+        <p>Services count: {{len .Services}}</p>
+        
+        {{if .Services}}
+          <p>Services found!</p>
+          {{range .Services}}
+            <p>Service: {{.Name}} ({{.FullName}})</p>
+          {{end}}
+        {{else}}
+          <p>No services found</p>
+        {{end}}
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+package echo.v1;
+
+option go_package = "github.com/bnprtr/reflect/internal/descriptor/testdata/basic";
+
+// EchoService provides simple echo functionality.
+service EchoService {
+  // Echo returns the same message that was sent.
+  rpc Echo(EchoRequest) returns (EchoResponse);
+  
+  // EchoStream streams back the same message multiple times.
+  rpc EchoStream(EchoRequest) returns (stream EchoResponse);
+}
+
+// EchoRequest contains the message to echo.
+message EchoRequest {
+  // The message to echo back.
+  string message = 1;
+  
+  // Optional count for streaming responses.
+  int32 count = 2;
+}
+
+// EchoResponse contains the echoed message.
+message EchoResponse {
+  // The echoed message.
+  string message = 1;
+  
+  // Timestamp when the echo was processed.
+  int64 timestamp = 2;
+}
+
+// Status represents the status of an operation.
+enum Status {
+  STATUS_UNSPECIFIED = 0;
+  STATUS_SUCCESS = 1;
+  STATUS_ERROR = 2;
+}

@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package import.v1;
+
+option go_package = "github.com/bnprtr/reflect/internal/descriptor/testdata/import";
+
+import "shared/common.proto";
+
+// ImportEchoService demonstrates cross-file imports.
+service ImportEchoService {
+  // ProcessMessage processes a common message and returns details.
+  rpc ProcessMessage(ProcessMessageRequest) returns (ProcessMessageResponse);
+}
+
+// ProcessMessageRequest wraps a common message for processing.
+message ProcessMessageRequest {
+  // The common message to process.
+  shared.v1.CommonMessage message = 1;
+  
+  // Options for processing.
+  ProcessingOptions options = 2;
+}
+
+// ProcessMessageResponse contains the processing result.
+message ProcessMessageResponse {
+  // The processed message.
+  shared.v1.CommonMessage message = 1;
+  
+  // Any error details if processing failed.
+  shared.v1.ErrorDetails error = 2;
+  
+  // Processing status.
+  ProcessingStatus status = 3;
+}
+
+// ProcessingOptions configures how messages are processed.
+message ProcessingOptions {
+  // Whether to validate the message.
+  bool validate = 1;
+  
+  // Maximum processing time in seconds.
+  int32 timeout_seconds = 2;
+}
+
+// ProcessingStatus indicates the result of processing.
+enum ProcessingStatus {
+  PROCESSING_STATUS_UNSPECIFIED = 0;
+  PROCESSING_STATUS_SUCCESS = 1;
+  PROCESSING_STATUS_VALIDATION_ERROR = 2;
+  PROCESSING_STATUS_TIMEOUT = 3;
+}
