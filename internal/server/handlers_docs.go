@@ -1,10 +1,12 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
 
+	"github.com/bnprtr/reflect/internal/descriptor"
 	"github.com/bnprtr/reflect/internal/docs"
 	"github.com/bnprtr/reflect/internal/server/theme"
 	"github.com/go-chi/chi/v5"
@@ -47,6 +49,9 @@ func (s *Server) routes() {
 	// Theme API routes
 	s.router.Get("/api/themes", s.handleThemesList())
 	s.router.Get("/api/themes/current", s.handleCurrentTheme())
+
+	// Example generation API
+	s.router.Post("/api/examples/generate", s.handleGenerateExample())
 }
 
 func (s *Server) handleHome() http.HandlerFunc {
@@ -222,5 +227,57 @@ func (s *Server) handleTypePartial() http.HandlerFunc {
 		}
 
 		http.Error(w, fmt.Sprintf("Type not found: %s", fullName), http.StatusNotFound)
+	}
+}
+
+// GenerateExampleRequest represents the request body for example generation.
+type GenerateExampleRequest struct {
+	MessageType string                    `json:"messageType"`
+	Options     descriptor.ExampleOptions `json:"options"`
+}
+
+// GenerateExampleResponse represents the response for example generation.
+type GenerateExampleResponse struct {
+	ExampleJSON string `json:"exampleJson"`
+	Error       string `json:"error,omitempty"`
+}
+
+func (s *Server) handleGenerateExample() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var req GenerateExampleRequest
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, fmt.Sprintf("Invalid request body: %v", err), http.StatusBadRequest)
+			return
+		}
+
+		if req.MessageType == "" {
+			http.Error(w, "messageType is required", http.StatusBadRequest)
+			return
+		}
+
+		// Find the message in the registry
+		msg, exists := s.registry.FindMessage(req.MessageType)
+		if !exists {
+			http.Error(w, fmt.Sprintf("Message type %s not found", req.MessageType), http.StatusNotFound)
+			return
+		}
+
+		// Generate example JSON
+		exampleJSON, err := descriptor.GenerateExampleJSON(msg, req.Options)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Failed to generate example: %v", err), http.StatusInternalServerError)
+			return
+		}
+
+		// Return response
+		response := GenerateExampleResponse{
+			ExampleJSON: exampleJSON,
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		if err := json.NewEncoder(w).Encode(response); err != nil {
+			http.Error(w, fmt.Sprintf("Failed to encode response: %v", err), http.StatusInternalServerError)
+			return
+		}
 	}
 }

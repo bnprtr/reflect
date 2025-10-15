@@ -1,0 +1,82 @@
+{
+  "displayName": "example_display_name",
+  "email": "example_email",
+  "fullName": "example_full_name",
+  "lastLoginAt": {
+    "nanos": 0,
+    "seconds": 1640995200
+  },
+  "metadata": {
+    "createdAt": {
+      "nanos": 0,
+      "seconds": 1640995200
+    },
+    "id": "example_id",
+    "labels": {
+      "example_key": "example_value",
+      "example_key_1": "example_value"
+    },
+    "updatedAt": {
+      "nanos": 0,
+      "seconds": 1640995200
+    },
+    "version": 42
+  },
+  "preferences": {
+    "emailNotifications": {
+      "digestFrequency": "DIGEST_FREQUENCY_REALTIME",
+      "enabled": true,
+      "eventTypes": [
+        "example_event_types",
+        "example_event_types"
+      ]
+    },
+    "privacy": {
+      "emailVisible": true,
+      "profilePublic": true,
+      "showOnlineStatus": true
+    },
+    "pushNotifications": {
+      "digestFrequency": "DIGEST_FREQUENCY_REALTIME",
+      "enabled": true,
+      "eventTypes": [
+        "example_event_types",
+        "example_event_types"
+      ]
+    },
+    "theme": "THEME_LIGHT"
+  },
+  "profile": {
+    "address": {
+      "city": "example_city",
+      "coordinates": {
+        "latitude": 3.14,
+        "longitude": 3.14
+      },
+      "countryCode": "example_country_code",
+      "postalCode": "example_postal_code",
+      "state": "example_state",
+      "streetLine1": "example_street_line1",
+      "streetLine2": "example_street_line2"
+    },
+    "bio": "example_bio",
+    "birthDate": "example_birth_date",
+    "language": "example_language",
+    "phoneNumber": "example_phone_number",
+    "photoUrl": "example_photo_url",
+    "socialLinks": {
+      "github": "example_github",
+      "linkedin": "example_linkedin",
+      "other": {
+        "example_key": "example_value",
+        "example_key_1": "example_value"
+      },
+      "twitter": "example_twitter"
+    },
+    "timezone": "example_timezone",
+    "website": "example_website"
+  },
+  "role": "USER_ROLE_USER",
+  "status": "STATUS_ACTIVE",
+  "verificationStatus": "VERIFICATION_STATUS_UNVERIFIED"
+}

@@ -1,0 +1,10 @@
+{
+  "descending": true,
+  "pagination": {
+    "pageSize": 42,
+    "pageToken": "example_page_token"
+  },
+  "role": "USER_ROLE_USER",
+  "sortBy": "example_sort_by",
+  "status": "STATUS_ACTIVE"
+}

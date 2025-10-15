@@ -59,6 +59,22 @@
             </div>
 
             {{if .Message}}
+              {{if .Message.ExampleJSON}}
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
+                  <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-xl font-semibold text-gray-900 dark:text-white">Example JSON</h2>
+                  </div>
+                  <div class="px-6 py-4">
+                    <div class="code-block">
+                      <button class="copy-btn" onclick="copyToClipboard(this)" data-clipboard-text="{{.Message.ExampleJSON}}">
+                        Copy
+                      </button>
+                      <pre><code class="language-json">{{.Message.ExampleJSON}}</code></pre>
+                    </div>
+                  </div>
+                </div>
+              {{end}}
+
               {{if .Message.Fields}}
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                   <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
@@ -143,5 +159,22 @@
         </div>
       </main>
     </div>
+
+    <script>
+    function copyToClipboard(button) {
+      const text = button.getAttribute('data-clipboard-text');
+      navigator.clipboard.writeText(text).then(function() {
+        const originalText = button.textContent;
+        button.textContent = 'Copied!';
+        button.classList.add('bg-green-200', 'dark:bg-green-800');
+        setTimeout(function() {
+          button.textContent = originalText;
+          button.classList.remove('bg-green-200', 'dark:bg-green-800');
+        }, 2000);
+      }).catch(function(err) {
+        console.error('Failed to copy text: ', err);
+      });
+    }
+    </script>
   </body>
 </html>

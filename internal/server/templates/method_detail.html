@@ -132,6 +132,38 @@
               </div>
             {{end}}
 
+            {{if .Method.ExampleRequest}}
+              <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                  <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Example Request</h2>
+                </div>
+                <div class="px-6 py-4">
+                  <div class="code-block">
+                    <button class="copy-btn" onclick="copyToClipboard(this)" data-clipboard-text="{{.Method.ExampleRequest}}">
+                      Copy
+                    </button>
+                    <pre><code class="language-json">{{.Method.ExampleRequest}}</code></pre>
+                  </div>
+                </div>
+              </div>
+            {{end}}
+
+            {{if .Method.ExampleResponse}}
+              <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                  <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Example Response</h2>
+                </div>
+                <div class="px-6 py-4">
+                  <div class="code-block">
+                    <button class="copy-btn" onclick="copyToClipboard(this)" data-clipboard-text="{{.Method.ExampleResponse}}">
+                      Copy
+                    </button>
+                    <pre><code class="language-json">{{.Method.ExampleResponse}}</code></pre>
+                  </div>
+                </div>
+              </div>
+            {{end}}
+
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {{if .Method.Examples.Curl}}
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">

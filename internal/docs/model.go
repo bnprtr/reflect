@@ -44,12 +44,15 @@ type MethodSummary struct {
 		Curl    string
 		Grpcurl string
 	}
+	ExampleRequest  string
+	ExampleResponse string
 }
 
 // MessageView represents a detailed message view.
 type MessageView struct {
 	Name, FullName, Package, Comment string
 	Fields                           []FieldView
+	ExampleJSON                      string
 }
 
 // FieldView represents a field in a message.
@@ -126,6 +129,19 @@ func BuildServiceView(reg *descriptor.Registry, fullName string) (*ServiceView, 
 			ServerStreaming: method.IsStreamingServer(),
 			Deprecated:      false, // TODO: implement deprecated detection
 		}
+
+		// Generate example request and response JSON
+		if inputMsg, exists := reg.FindMessage(string(method.Input().FullName())); exists {
+			if example, err := descriptor.GenerateExampleJSON(inputMsg, descriptor.DefaultExampleOptions()); err == nil {
+				summary.ExampleRequest = example
+			}
+		}
+		if outputMsg, exists := reg.FindMessage(string(method.Output().FullName())); exists {
+			if example, err := descriptor.GenerateExampleJSON(outputMsg, descriptor.DefaultExampleOptions()); err == nil {
+				summary.ExampleResponse = example
+			}
+		}
+
 		methods = append(methods, summary)
 	}
 
@@ -178,6 +194,20 @@ func BuildMethodView(reg *descriptor.Registry, fullName string) (*MethodSummary,
 	summary.Examples.Curl = generateCurlExample(summary)
 	summary.Examples.Grpcurl = generateGrpcurlExample(summary)
 
+	// Generate example request and response JSON
+	if reg != nil {
+		if inputMsg, exists := reg.FindMessage(string(method.Input().FullName())); exists {
+			if example, err := descriptor.GenerateExampleJSON(inputMsg, descriptor.DefaultExampleOptions()); err == nil {
+				summary.ExampleRequest = example
+			}
+		}
+		if outputMsg, exists := reg.FindMessage(string(method.Output().FullName())); exists {
+			if example, err := descriptor.GenerateExampleJSON(outputMsg, descriptor.DefaultExampleOptions()); err == nil {
+				summary.ExampleResponse = example
+			}
+		}
+	}
+
 	return summary, nil
 }
 
@@ -213,12 +243,21 @@ func BuildMessageView(reg *descriptor.Registry, fullName string) (*MessageView, 
 		return fields[i].Number < fields[j].Number
 	})
 
+	// Generate example JSON
+	exampleJSON := ""
+	if reg != nil {
+		if example, err := descriptor.GenerateExampleJSON(message, descriptor.DefaultExampleOptions()); err == nil {
+			exampleJSON = example
+		}
+	}
+
 	return &MessageView{
-		Name:     string(message.Name()),
-		FullName: fullName,
-		Package:  string(message.ParentFile().Package()),
-		Comment:  reg.CommentIndex[fullName],
-		Fields:   fields,
+		Name:        string(message.Name()),
+		FullName:    fullName,
+		Package:     string(message.ParentFile().Package()),
+		Comment:     reg.CommentIndex[fullName],
+		Fields:      fields,
+		ExampleJSON: exampleJSON,
 	}, nil
 }
 
