@@ -13,6 +13,7 @@
       }
     </style>
     {{end}}
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script src="/static/theme.js"></script>
   </head>
   <body class="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-200">
@@ -200,7 +201,6 @@
       </main>
     </div>
 
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
     <script>
     function copyToClipboard(button) {
       const text = button.getAttribute('data-clipboard-text');

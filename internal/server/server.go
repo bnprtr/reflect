@@ -8,6 +8,7 @@ import (
 	"text/template"
 
 	"github.com/bnprtr/reflect/internal/descriptor"
+	"github.com/bnprtr/reflect/internal/docs"
 	"github.com/bnprtr/reflect/internal/server/theme"
 	"github.com/go-chi/chi/v5"
 )
@@ -19,10 +20,11 @@ var templatesFS embed.FS
 var staticFS embed.FS
 
 type Server struct {
-	router    *chi.Mux
-	templates *template.Template
-	registry  *descriptor.Registry
-	theme     *theme.Theme
+	router      *chi.Mux
+	templates   *template.Template
+	registry    *descriptor.Registry
+	searchIndex *docs.SearchIndex
+	theme       *theme.Theme
 }
 
 func New(registry *descriptor.Registry) (http.Handler, error) {
@@ -44,7 +46,10 @@ func NewWithTheme(registry *descriptor.Registry, themeConfig *theme.Theme) (http
 	staticSub, _ := fs.Sub(staticFS, "static")
 	r.Handle("/static/*", http.StripPrefix("/static/", http.FileServer(http.FS(staticSub))))
 
-	s := &Server{router: r, templates: t, registry: registry, theme: themeConfig}
+	// Build search index
+	searchIndex := docs.BuildSearchIndex(registry)
+
+	s := &Server{router: r, templates: t, registry: registry, searchIndex: searchIndex, theme: themeConfig}
 	s.routes()
 	return s.router, nil
 }

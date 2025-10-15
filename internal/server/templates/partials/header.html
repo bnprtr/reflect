@@ -13,6 +13,30 @@
       </div>
 
       <div class="flex items-center space-x-3">
+        <!-- Search -->
+        <div class="relative">
+          <div class="relative">
+            <input
+              type="text"
+              id="search-input"
+              name="q"
+              placeholder="Search services, methods, types..."
+              class="w-64 px-3 py-2 pl-10 text-sm bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+              hx-get="/api/search"
+              hx-trigger="keyup changed delay:300ms"
+              hx-target="#search-results"
+            />
+            <svg class="absolute left-3 top-2.5 w-4 h-4 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          
+          <!-- Search Results Dropdown -->
+          <div id="search-results" class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-slate-800 rounded-lg shadow-xl border-2 border-gray-200 dark:border-slate-700 z-50" style="max-height: 60vh; overflow-y: auto;">
+            <!-- Results will be populated here by HTMX -->
+          </div>
+        </div>
+
         <!-- Theme Selector -->
         <div class="relative">
           <button id="theme-selector-btn" class="theme-toggle flex items-center space-x-2" aria-label="Select color theme">
@@ -62,3 +86,57 @@
     </div>
   </div>
 </header>
+
+<script>
+// Search functionality
+document.addEventListener('DOMContentLoaded', function() {
+  const searchInput = document.getElementById('search-input');
+  const searchResults = document.getElementById('search-results');
+
+  if (searchInput && searchResults) {
+    // Show search results when typing (if query is long enough)
+    searchInput.addEventListener('input', function() {
+      if (this.value.length >= 2) {
+        searchResults.classList.remove('hidden');
+      } else {
+        searchResults.classList.add('hidden');
+      }
+    });
+
+    // Hide search results when clicking outside
+    document.addEventListener('click', function(event) {
+      if (!searchInput.contains(event.target) && !searchResults.contains(event.target)) {
+        searchResults.classList.add('hidden');
+      }
+    });
+
+    // Show dropdown after HTMX loads content
+    searchResults.addEventListener('htmx:afterSwap', function(event) {
+      if (searchInput.value.length >= 2) {
+        searchResults.classList.remove('hidden');
+      }
+    });
+
+    // Prevent scroll propagation to body when scrolling in dropdown
+    searchResults.addEventListener('wheel', function(event) {
+      const delta = event.deltaY;
+      const scrollTop = this.scrollTop;
+      const scrollHeight = this.scrollHeight;
+      const height = this.clientHeight;
+
+      // At top and scrolling up
+      if (delta < 0 && scrollTop === 0) {
+        event.preventDefault();
+      }
+      // At bottom and scrolling down
+      else if (delta > 0 && scrollTop + height >= scrollHeight) {
+        event.preventDefault();
+      }
+
+      // Otherwise, let the dropdown scroll naturally
+      // The event will not propagate to the body
+      event.stopPropagation();
+    });
+  }
+});
+</script>

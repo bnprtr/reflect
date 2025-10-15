@@ -52,6 +52,9 @@ func (s *Server) routes() {
 
 	// Example generation API
 	s.router.Post("/api/examples/generate", s.handleGenerateExample())
+
+	// Search API
+	s.router.Get("/api/search", s.handleSearch())
 }
 
 func (s *Server) handleHome() http.HandlerFunc {
@@ -277,6 +280,35 @@ func (s *Server) handleGenerateExample() http.HandlerFunc {
 		w.Header().Set("Content-Type", "application/json")
 		if err := json.NewEncoder(w).Encode(response); err != nil {
 			http.Error(w, fmt.Sprintf("Failed to encode response: %v", err), http.StatusInternalServerError)
+			return
+		}
+	}
+}
+
+func (s *Server) handleSearch() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		query := r.URL.Query().Get("q")
+		if len(query) < 2 {
+			// Return empty results for short queries
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode([]docs.SearchResult{})
+			return
+		}
+
+		results := s.searchIndex.Search(query)
+
+		// Set content type for HTMX
+		w.Header().Set("Content-Type", "text/html")
+
+		// Render the search results template
+		data := map[string]any{
+			"Results": results,
+			"Query":   query,
+		}
+
+		err := s.templates.ExecuteTemplate(w, "search_results.html", data)
+		if err != nil {
+			http.Error(w, fmt.Sprintf("Template error: %v", err), http.StatusInternalServerError)
 			return
 		}
 	}
