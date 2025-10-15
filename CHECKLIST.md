@@ -8,8 +8,8 @@ This checklist breaks down the implementation of the Reflect project into phases
 - [x] **Protobuf Parsing**: Implement the descriptor loader and parser. Support loading from a directory, file uploads, and pasted text. This will populate the `DescriptorRegistry`.
 - [x] **Doc Rendering**: Build the view models and HTML templates for rendering services, methods, messages, and enums. Use HTMX for any partial page updates. Includes Tailwind CSS styling, dark mode support, and HTTP annotations.
 - [x] **Example Generation**: Implement the logic to generate example JSON request bodies for any given message type.
-- [ ] **Search**: Add a lightweight search feature to find services, methods, and messages.
-- [ ] **Dev Watcher**: Use `fsnotify` to watch for changes in the proto directory and automatically reload the descriptors in development mode.
+- [x] **Search**: Add a lightweight search feature to find services, methods, and messages.
+- [x] **Dev Watcher**: Use `fsnotify` to watch for changes in the proto directory and automatically reload the descriptors in development mode.
 
 ## Milestone 2: "Try It" Functionality (Unary)
 

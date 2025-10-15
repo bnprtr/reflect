@@ -59,7 +59,8 @@ func (s *Server) routes() {
 
 func (s *Server) handleHome() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		index, err := docs.BuildIndex(s.registry)
+		registry, _ := s.getRegistry()
+		index, err := docs.BuildIndex(registry)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to build index: %v", err), http.StatusInternalServerError)
 			return
@@ -86,14 +87,15 @@ func (s *Server) handleServiceDetail() http.HandlerFunc {
 			return
 		}
 
-		serviceView, err := docs.BuildServiceView(s.registry, fullName)
+		registry, _ := s.getRegistry()
+		serviceView, err := docs.BuildServiceView(registry, fullName)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Service not found: %v", err), http.StatusNotFound)
 			return
 		}
 
 		// Get all services for sidebar navigation
-		index, err := docs.BuildIndex(s.registry)
+		index, err := docs.BuildIndex(registry)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to build index: %v", err), http.StatusInternalServerError)
 			return
@@ -121,7 +123,8 @@ func (s *Server) handleMethodDetail() http.HandlerFunc {
 			return
 		}
 
-		methodView, err := docs.BuildMethodView(s.registry, fullName)
+		registry, _ := s.getRegistry()
+		methodView, err := docs.BuildMethodView(registry, fullName)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Method not found: %v", err), http.StatusNotFound)
 			return
@@ -135,7 +138,7 @@ func (s *Server) handleMethodDetail() http.HandlerFunc {
 		}
 
 		// Get all services for sidebar navigation
-		index, err := docs.BuildIndex(s.registry)
+		index, err := docs.BuildIndex(registry)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to build index: %v", err), http.StatusInternalServerError)
 			return
@@ -164,15 +167,17 @@ func (s *Server) handleTypeDetail() http.HandlerFunc {
 			return
 		}
 
+		registry, _ := s.getRegistry()
+
 		// Get all services for sidebar navigation
-		index, err := docs.BuildIndex(s.registry)
+		index, err := docs.BuildIndex(registry)
 		if err != nil {
 			http.Error(w, fmt.Sprintf("Failed to build index: %v", err), http.StatusInternalServerError)
 			return
 		}
 
 		// Try to find as message first, then as enum
-		messageView, err := docs.BuildMessageView(s.registry, fullName)
+		messageView, err := docs.BuildMessageView(registry, fullName)
 		if err == nil {
 			data := s.mergeData(r, map[string]any{
 				"Title":    fmt.Sprintf("Message: %s", messageView.Name),
@@ -183,7 +188,7 @@ func (s *Server) handleTypeDetail() http.HandlerFunc {
 			return
 		}
 
-		enumView, err := docs.BuildEnumView(s.registry, fullName)
+		enumView, err := docs.BuildEnumView(registry, fullName)
 		if err == nil {
 			data := s.mergeData(r, map[string]any{
 				"Title":    fmt.Sprintf("Enum: %s", enumView.Name),
@@ -206,8 +211,10 @@ func (s *Server) handleTypePartial() http.HandlerFunc {
 			return
 		}
 
+		registry, _ := s.getRegistry()
+
 		// Try to find as message first, then as enum
-		messageView, err := docs.BuildMessageView(s.registry, fullName)
+		messageView, err := docs.BuildMessageView(registry, fullName)
 		if err == nil {
 			data := map[string]any{
 				"Message": messageView,
@@ -220,7 +227,7 @@ func (s *Server) handleTypePartial() http.HandlerFunc {
 			return
 		}
 
-		enumView, err := docs.BuildEnumView(s.registry, fullName)
+		enumView, err := docs.BuildEnumView(registry, fullName)
 		if err == nil {
 			data := map[string]any{
 				"Enum": enumView,
@@ -258,8 +265,10 @@ func (s *Server) handleGenerateExample() http.HandlerFunc {
 			return
 		}
 
+		registry, _ := s.getRegistry()
+
 		// Find the message in the registry
-		msg, exists := s.registry.FindMessage(req.MessageType)
+		msg, exists := registry.FindMessage(req.MessageType)
 		if !exists {
 			http.Error(w, fmt.Sprintf("Message type %s not found", req.MessageType), http.StatusNotFound)
 			return
@@ -295,7 +304,8 @@ func (s *Server) handleSearch() http.HandlerFunc {
 			return
 		}
 
-		results := s.searchIndex.Search(query)
+		_, searchIndex := s.getRegistry()
+		results := searchIndex.Search(query)
 
 		// Set content type for HTMX
 		w.Header().Set("Content-Type", "text/html")
