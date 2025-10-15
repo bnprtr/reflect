@@ -6,20 +6,30 @@ import (
 	"strings"
 
 	"github.com/bnprtr/reflect/internal/docs"
+	"github.com/bnprtr/reflect/internal/server/theme"
 	"github.com/go-chi/chi/v5"
 )
 
 // baseData returns common template data with theme configuration
-func (s *Server) baseData() map[string]any {
+func (s *Server) baseData(r *http.Request) map[string]any {
+	// Check for theme parameter in URL
+	themeName := r.URL.Query().Get("theme")
+	if themeName == "" {
+		themeName = s.theme.Name
+	}
+
+	// Get theme by name (fallback to current theme if not found)
+	themeConfig := theme.GetThemeByName(themeName)
+
 	return map[string]any{
-		"ThemeVars": s.theme.ToCSSVariables(),
-		"ThemeName": s.theme.Name,
+		"ThemeVars": themeConfig.ToCSSVariables(),
+		"ThemeName": themeConfig.Name,
 	}
 }
 
 // mergeData merges additional data with base theme data
-func (s *Server) mergeData(data map[string]any) map[string]any {
-	base := s.baseData()
+func (s *Server) mergeData(r *http.Request, data map[string]any) map[string]any {
+	base := s.baseData(r)
 	for k, v := range data {
 		base[k] = v
 	}
@@ -47,7 +57,7 @@ func (s *Server) handleHome() http.HandlerFunc {
 			return
 		}
 
-		data := s.mergeData(map[string]any{
+		data := s.mergeData(r, map[string]any{
 			"Title":    "Reflect",
 			"Services": index.Services,
 		})
@@ -81,7 +91,7 @@ func (s *Server) handleServiceDetail() http.HandlerFunc {
 			return
 		}
 
-		data := s.mergeData(map[string]any{
+		data := s.mergeData(r, map[string]any{
 			"Title":          fmt.Sprintf("Service: %s", serviceView.Name),
 			"Service":        serviceView,
 			"Services":       index.Services,
@@ -123,7 +133,7 @@ func (s *Server) handleMethodDetail() http.HandlerFunc {
 			return
 		}
 
-		data := s.mergeData(map[string]any{
+		data := s.mergeData(r, map[string]any{
 			"Title":          fmt.Sprintf("Method: %s", methodView.Name),
 			"Method":         methodView,
 			"ServiceName":    serviceName,
@@ -156,7 +166,7 @@ func (s *Server) handleTypeDetail() http.HandlerFunc {
 		// Try to find as message first, then as enum
 		messageView, err := docs.BuildMessageView(s.registry, fullName)
 		if err == nil {
-			data := s.mergeData(map[string]any{
+			data := s.mergeData(r, map[string]any{
 				"Title":    fmt.Sprintf("Message: %s", messageView.Name),
 				"Message":  messageView,
 				"Services": index.Services,
@@ -167,7 +177,7 @@ func (s *Server) handleTypeDetail() http.HandlerFunc {
 
 		enumView, err := docs.BuildEnumView(s.registry, fullName)
 		if err == nil {
-			data := s.mergeData(map[string]any{
+			data := s.mergeData(r, map[string]any{
 				"Title":    fmt.Sprintf("Enum: %s", enumView.Name),
 				"Enum":     enumView,
 				"Services": index.Services,

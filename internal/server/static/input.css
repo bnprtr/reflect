@@ -4,48 +4,48 @@
 
 @layer base {
   :root {
-    /* Light mode colors - defaults */
-    --color-bg: #f9fafb;
-    --color-surface: #ffffff;
-    --color-primary: #111827;
-    --color-secondary: #6b7280;
-    --color-text: #111827;
-    --color-text-secondary: #6b7280;
-    --color-border: #e5e7eb;
-    --color-accent: #2563eb;
-    --color-accent-hover: #1d4ed8;
-    --color-shadow: rgba(0, 0, 0, 0.1);
+    /* Light mode colors - use theme variables with fallbacks */
+    --color-bg: var(--color-bg-light, #f9fafb);
+    --color-surface: var(--color-surface-light, #ffffff);
+    --color-primary: var(--color-primary-light, #111827);
+    --color-secondary: var(--color-secondary-light, #6b7280);
+    --color-text: var(--color-text-light, #111827);
+    --color-text-secondary: var(--color-text-secondary-light, #6b7280);
+    --color-border: var(--color-border-light, #e5e7eb);
+    --color-accent: var(--color-accent-light, #2563eb);
+    --color-accent-hover: var(--color-accent-hover-light, #1d4ed8);
+    --color-shadow: var(--color-shadow-light, rgba(0, 0, 0, 0.1));
 
-    /* Typography */
-    --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    --font-family-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace;
-    --font-size-base: 16px;
-    --line-height: 1.6;
+    /* Typography - use theme variables with fallbacks */
+    --font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
+    --font-family-mono: var(--font-family-mono, 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', Consolas, 'Courier New', monospace);
+    --font-size-base: var(--font-size-base, 16px);
+    --line-height: var(--line-height, 1.6);
 
-    /* Spacing */
-    --header-height: 4rem;
-    --content-padding: 2rem;
-    --card-padding: 1.5rem;
+    /* Spacing - use theme variables with fallbacks */
+    --header-height: var(--header-height, 4rem);
+    --content-padding: var(--content-padding, 2rem);
+    --card-padding: var(--card-padding, 1.5rem);
 
-    /* Components */
-    --header-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-    --card-radius: 0.5rem;
-    --border-width: 1px;
+    /* Components - use theme variables with fallbacks */
+    --header-shadow: var(--header-shadow, 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06));
+    --card-shadow: var(--card-shadow, 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06));
+    --card-radius: var(--card-radius, 0.5rem);
+    --border-width: var(--border-width, 1px);
   }
 
   .dark {
-    /* Dark mode colors */
-    --color-bg: #0f172a;
-    --color-surface: #1e293b;
-    --color-primary: #f1f5f9;
-    --color-secondary: #94a3b8;
-    --color-text: #f1f5f9;
-    --color-text-secondary: #94a3b8;
-    --color-border: #334155;
-    --color-accent: #3b82f6;
-    --color-accent-hover: #60a5fa;
-    --color-shadow: rgba(0, 0, 0, 0.5);
+    /* Dark mode colors - use theme variables with fallbacks */
+    --color-bg: var(--color-bg-dark, #0f172a);
+    --color-surface: var(--color-surface-dark, #1e293b);
+    --color-primary: var(--color-primary-dark, #f1f5f9);
+    --color-secondary: var(--color-secondary-dark, #94a3b8);
+    --color-text: var(--color-text-dark, #f1f5f9);
+    --color-text-secondary: var(--color-text-secondary-dark, #94a3b8);
+    --color-border: var(--color-border-dark, #334155);
+    --color-accent: var(--color-accent-dark, #3b82f6);
+    --color-accent-hover: var(--color-accent-hover-dark, #60a5fa);
+    --color-shadow: var(--color-shadow-dark, rgba(0, 0, 0, 0.5));
   }
 
   html {
@@ -70,23 +70,40 @@
   .site-header {
     height: var(--header-height);
     box-shadow: var(--header-shadow);
-    @apply bg-white dark:bg-slate-800 border-b-2 border-gray-200 dark:border-slate-700 sticky top-0 z-50 backdrop-blur-sm bg-opacity-95 dark:bg-opacity-95;
+    background-color: var(--color-surface);
+    border-bottom: var(--border-width) solid var(--color-border);
+    @apply sticky top-0 z-50 backdrop-blur-sm bg-opacity-95;
   }
 
   .theme-toggle {
-    @apply inline-flex items-center justify-center p-2.5 rounded-lg text-gray-600 hover:text-gray-900 hover:bg-gray-100 dark:text-gray-300 dark:hover:text-white dark:hover:bg-slate-700 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-slate-800;
+    background-color: transparent;
+    color: var(--color-secondary);
+    @apply inline-flex items-center justify-center p-2.5 rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .theme-toggle:hover {
+    background-color: var(--color-border);
+    color: var(--color-primary);
+  }
+
+  .theme-toggle:focus {
+    --tw-ring-color: var(--color-accent);
+    --tw-ring-offset-color: var(--color-surface);
   }
 
   /* Cards */
   .card {
     border-radius: var(--card-radius);
     box-shadow: var(--card-shadow);
-    @apply bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-700 overflow-hidden;
+    background-color: var(--color-surface);
+    border: var(--border-width) solid var(--color-border);
+    @apply overflow-hidden;
   }
 
   .card-header {
     padding: var(--card-padding);
-    @apply border-b-2 border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900;
+    border-bottom: var(--border-width) solid var(--color-border);
+    background-color: var(--color-bg);
   }
 
   .card-body {
@@ -94,34 +111,57 @@
   }
 
   .card-hover {
-    @apply hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-all duration-200 hover:shadow-md;
+    @apply transition-all duration-200;
+  }
+
+  .card-hover:hover {
+    background-color: var(--color-bg);
+    box-shadow: 0 4px 6px -1px var(--color-shadow), 0 2px 4px -2px var(--color-shadow);
   }
 
   /* Code Blocks */
   .code-block {
-    @apply relative bg-slate-50 dark:bg-slate-950 border-2 border-gray-300 dark:border-slate-700 rounded-lg overflow-hidden font-mono;
+    background-color: var(--color-bg);
+    border: var(--border-width) solid var(--color-border);
+    @apply relative rounded-lg overflow-hidden;
+    font-family: var(--font-family-mono);
   }
 
   .code-block pre {
     @apply p-4 overflow-x-auto text-sm leading-relaxed;
+    color: var(--color-text);
   }
 
   .code-block .copy-btn {
-    @apply absolute top-2 right-2 px-3 py-1.5 text-xs font-medium bg-white dark:bg-slate-800 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-slate-700 border border-gray-300 dark:border-slate-600 transition-all duration-200 shadow-sm;
+    background-color: var(--color-surface);
+    color: var(--color-secondary);
+    border: 1px solid var(--color-border);
+    @apply absolute top-2 right-2 px-3 py-1.5 text-xs font-medium rounded-md transition-all duration-200 shadow-sm;
+  }
+
+  .code-block .copy-btn:hover {
+    background-color: var(--color-bg);
   }
 
   /* Breadcrumbs */
   .breadcrumb {
-    @apply flex items-center space-x-2 text-sm font-medium text-gray-600 dark:text-gray-400;
+    color: var(--color-secondary);
+    @apply flex items-center space-x-2 text-sm font-medium;
   }
 
   .breadcrumb a {
-    @apply hover:text-blue-600 dark:hover:text-blue-400 transition-colors duration-200 underline decoration-transparent hover:decoration-current underline-offset-4;
+    color: var(--color-secondary);
+    @apply transition-colors duration-200 underline decoration-transparent hover:decoration-current underline-offset-4;
+  }
+
+  .breadcrumb a:hover {
+    color: var(--color-accent);
   }
 
   /* Sidebar */
   .sidebar {
-    @apply hidden lg:block lg:flex-shrink-0 lg:w-64 lg:border-l-2 lg:border-gray-200 lg:dark:border-slate-700 lg:pl-8 lg:ml-8;
+    border-left: var(--border-width) solid var(--color-border);
+    @apply hidden lg:block lg:flex-shrink-0 lg:w-64 lg:pl-8 lg:ml-8;
   }
 
   .sidebar-nav {
@@ -129,49 +169,74 @@
   }
 
   .sidebar-nav a {
-    @apply block px-3 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white transition-all duration-200 border-l-4 border-transparent hover:border-blue-500;
+    background-color: transparent;
+    color: var(--color-secondary);
+    border-left: 4px solid transparent;
+    @apply block px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200;
+  }
+
+  .sidebar-nav a:hover {
+    background-color: var(--color-bg);
+    color: var(--color-primary);
+    border-left-color: var(--color-accent);
   }
 
   .sidebar-nav a.active {
-    @apply bg-blue-50 dark:bg-slate-800 text-blue-700 dark:text-blue-400 border-l-4 border-blue-600 dark:border-blue-500 font-semibold;
+    background-color: var(--color-bg);
+    color: var(--color-accent);
+    border-left: 4px solid var(--color-accent);
+    @apply font-semibold;
   }
 
   /* Badges */
   .badge {
-    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border;
+    border: 1px solid var(--color-border);
+    @apply inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold;
   }
 
   .badge-deprecated {
-    @apply bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800;
+    background-color: rgba(185, 28, 28, 0.1);
+    color: rgb(185, 28, 28);
+    border-color: rgba(185, 28, 28, 0.3);
   }
 
   .badge-streaming {
-    @apply bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800;
+    background-color: rgba(29, 78, 216, 0.1);
+    color: rgb(29, 78, 216);
+    border-color: rgba(29, 78, 216, 0.3);
   }
 
   /* Links */
   .link-primary {
-    @apply text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 font-medium transition-colors duration-200 underline decoration-transparent hover:decoration-current underline-offset-2;
+    color: var(--color-accent);
+    @apply font-medium transition-colors duration-200 underline decoration-transparent hover:decoration-current underline-offset-2;
+  }
+
+  .link-primary:hover {
+    color: var(--color-accent-hover);
   }
 
   /* Typography enhancements */
   .heading-1 {
-    @apply text-4xl font-bold text-gray-900 dark:text-white tracking-tight;
+    color: var(--color-primary);
+    @apply text-4xl font-bold tracking-tight;
   }
 
   .heading-2 {
-    @apply text-2xl font-bold text-gray-900 dark:text-white tracking-tight;
+    color: var(--color-primary);
+    @apply text-2xl font-bold tracking-tight;
   }
 
   .heading-3 {
-    @apply text-xl font-semibold text-gray-900 dark:text-white;
+    color: var(--color-primary);
+    @apply text-xl font-semibold;
   }
 
   .text-secondary {
-    @apply text-gray-600 dark:text-gray-400;
+    color: var(--color-secondary);
   }
 
   .text-muted {
-    @apply text-gray-500 dark:text-gray-500;
+    color: var(--color-text-secondary);
   }
 }

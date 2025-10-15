@@ -69,8 +69,10 @@
   function changeColorTheme(themeName) {
     localStorage.setItem(COLOR_THEME_KEY, themeName);
 
-    // Reload page to apply new theme
-    window.location.reload();
+    // Redirect to URL with theme parameter to apply new theme
+    const url = new URL(window.location);
+    url.searchParams.set('theme', themeName);
+    window.location.href = url.toString();
   }
 
   // Initialize theme selector dropdown
