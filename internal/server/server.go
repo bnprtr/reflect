@@ -8,6 +8,7 @@ import (
 	"sync"
 	"text/template"
 
+	"github.com/bnprtr/reflect/internal/config"
 	"github.com/bnprtr/reflect/internal/descriptor"
 	"github.com/bnprtr/reflect/internal/docs"
 	"github.com/bnprtr/reflect/internal/server/theme"
@@ -26,14 +27,15 @@ type Server struct {
 	registry    *descriptor.Registry
 	searchIndex *docs.SearchIndex
 	theme       *theme.Theme
+	config      *config.Config
 	mu          sync.RWMutex // Protects registry and searchIndex during hot reload
 }
 
 func New(registry *descriptor.Registry) (*Server, error) {
-	return NewWithTheme(registry, theme.GetDefaultTheme())
+	return NewWithTheme(registry, theme.GetDefaultTheme(), nil)
 }
 
-func NewWithTheme(registry *descriptor.Registry, themeConfig *theme.Theme) (*Server, error) {
+func NewWithTheme(registry *descriptor.Registry, themeConfig *theme.Theme, cfg *config.Config) (*Server, error) {
 	t, err := template.New("").Funcs(template.FuncMap{
 		"contains": func(s, substr string) bool {
 			return strings.Contains(s, substr)
@@ -51,7 +53,7 @@ func NewWithTheme(registry *descriptor.Registry, themeConfig *theme.Theme) (*Ser
 	// Build search index
 	searchIndex := docs.BuildSearchIndex(registry)
 
-	s := &Server{router: r, templates: t, registry: registry, searchIndex: searchIndex, theme: themeConfig}
+	s := &Server{router: r, templates: t, registry: registry, searchIndex: searchIndex, theme: themeConfig, config: cfg}
 	s.routes()
 	return s, nil
 }

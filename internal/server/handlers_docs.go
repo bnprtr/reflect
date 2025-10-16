@@ -55,6 +55,9 @@ func (s *Server) routes() {
 
 	// Search API
 	s.router.Get("/api/search", s.handleSearch())
+
+	// Try It API routes
+	s.router.Post("/api/tryit/invoke", s.handleTryItInvoke)
 }
 
 func (s *Server) handleHome() http.HandlerFunc {
@@ -150,6 +153,7 @@ func (s *Server) handleMethodDetail() http.HandlerFunc {
 			"ServiceName":    serviceName,
 			"Services":       index.Services,
 			"CurrentService": serviceName,
+			"Config":         s.config,
 		})
 		err = s.templates.ExecuteTemplate(w, "method_detail.html", data)
 		if err != nil {

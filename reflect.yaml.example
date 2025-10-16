@@ -1,6 +1,69 @@
-# Reflect configuration example
-# This file will be populated in Milestone 2
-environments: []
-headerAllowlist: []
+# Reflect Configuration Example
+#
+# This file configures environments and security policies for the "Try It" functionality.
+# Copy this file to reflect.yaml and customize for your setup.
+
+# Environments define named upstream services that can be invoked via "Try It".
+# Each environment acts as an allowlist entry (SSRF protection).
+environments:
+  # Development environment
+  - name: dev
+    # Base URL for all RPCs to this environment (required)
+    baseURL: https://dev.api.example.com
+
+    # Default transport: "connect", "grpc", or "grpc-web" (optional, default: "connect")
+    transport: connect
+
+    # TLS configuration (optional)
+    tls:
+      # WARNING: Only set to true for development/testing with self-signed certs
+      insecureSkipVerify: false
+
+    # Default headers sent with every request to this environment (optional)
+    # Supports environment variable expansion using ${VAR_NAME} syntax
+    defaultHeaders:
+      x-api-key: ${REFLECT_DEV_API_KEY}
+      x-environment: development
+
+  # Staging environment
+  - name: staging
+    baseURL: https://staging.api.example.com
+    transport: connect
+    defaultHeaders:
+      x-api-key: ${REFLECT_STAGING_API_KEY}
+      x-environment: staging
+
+  # Production environment
+  - name: prod
+    baseURL: https://api.example.com
+    transport: grpc
+    defaultHeaders:
+      x-api-key: ${REFLECT_PROD_API_KEY}
+      x-environment: production
+
+  # Local development server (with insecure TLS)
+  - name: local
+    baseURL: https://localhost:8443
+    transport: connect
+    tls:
+      insecureSkipVerify: true
+
+# Header allowlist: Only these headers can be sent to upstream services.
+# This prevents accidentally leaking sensitive headers like cookies.
+# If empty or omitted, all headers are allowed (permissive default).
+headerAllowlist:
+  - authorization
+  - x-api-key
+  - x-request-id
+  - x-environment
+  - content-type
+  - accept
+  - user-agent
+
+# Maximum request body size in bytes (optional, default: 1048576 = 1 MB)
+# Protects against large request attacks
 maxRequestBodyBytes: 1048576
+
+# Request timeout in seconds (optional, default: 15)
+# Maximum time allowed for an RPC to complete
 requestTimeoutSeconds: 15

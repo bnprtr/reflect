@@ -10,6 +10,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/bnprtr/reflect/internal/config"
 	"github.com/bnprtr/reflect/internal/descriptor"
 	"github.com/bnprtr/reflect/internal/server"
 	"github.com/bnprtr/reflect/internal/server/theme"
@@ -21,6 +22,7 @@ func main() {
 	protoRoot := flag.String("proto-root", "", "root directory containing .proto files")
 	themeName := flag.String("theme", "default", "theme name (default, minimal, high-contrast, ocean, forest, sunset, monochrome)")
 	themeFile := flag.String("theme-file", "", "path to custom theme file (JSON or YAML)")
+	configPath := flag.String("config", "", "path to reflect.yaml configuration file (optional)")
 	var protoIncludes []string
 	flag.Func("proto-include", "include path for proto imports (can be specified multiple times)", func(value string) error {
 		protoIncludes = append(protoIncludes, value)
@@ -30,6 +32,17 @@ func main() {
 	flag.Parse()
 
 	ctx := context.Background()
+
+	// Load configuration if specified
+	var cfg *config.Config
+	if *configPath != "" {
+		var err error
+		cfg, err = config.Load(*configPath)
+		if err != nil {
+			log.Fatalf("Failed to load config from %q: %v", *configPath, err)
+		}
+		log.Printf("Loaded configuration from %q with %d environment(s)", *configPath, len(cfg.Environments))
+	}
 
 	// Load protobuf descriptors if proto-root is specified
 	var reg *descriptor.Registry
@@ -59,7 +72,7 @@ func main() {
 		log.Printf("Using theme: %s", selectedTheme.Name)
 	}
 
-	srv, err := server.NewWithTheme(reg, selectedTheme)
+	srv, err := server.NewWithTheme(reg, selectedTheme, cfg)
 	if err != nil {
 		log.Fatal(err)
 	}

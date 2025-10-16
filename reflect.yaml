@@ -1,0 +1,26 @@
+# Reflect Configuration for Local Testing
+#
+# This configuration enables the Try It functionality.
+
+environments:
+  - name: local
+    baseURL: http://localhost:8080
+    transport: connect
+    defaultHeaders:
+      Content-Type: application/json
+
+  - name: demo
+    baseURL: https://demo.connectrpc.com
+    transport: connect
+    description: Public Connect demo server
+
+# Header Allowlist - only these headers can be sent from the UI
+headerAllowlist:
+  - Content-Type
+  - Accept
+  - User-Agent
+  - X-Custom-Header
+
+# Security Settings
+maxRequestBodyBytes: 1048576  # 1 MB
+requestTimeoutSeconds: 30
