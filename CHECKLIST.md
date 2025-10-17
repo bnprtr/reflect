@@ -13,10 +13,11 @@ This checklist breaks down the implementation of the Reflect project into phases
 
 ## Milestone 2: "Try It" Functionality (Unary)
 
-- [ ] **Configuration**: Implement the `reflect.yaml` loader to configure named environments, base URLs, and security policies.
-- [ ] **Connect Invoker**: Implement the "Try It" proxy endpoint for unary Connect RPCs (JSON over HTTP).
-- [ ] **gRPC Invoker**: Implement the "Try It" proxy endpoint for unary gRPC RPCs using `grpc-go`'s dynamic invocation.
-- [ ] **Security Hardening**: Enforce all security policies: SSRF allowlist for environments, header allowlists, CSRF protection on forms, request size/timeout limits, and audit logging.
+- [x] **Configuration**: Implement the `reflect.yaml` loader to configure named environments, base URLs, and security policies.
+- [x] **Connect Invoker**: Implement the "Try It" proxy endpoint for unary Connect RPCs (JSON over HTTP).
+- [x] **gRPC Invoker**: Implement the "Try It" proxy endpoint for unary gRPC RPCs using `grpc-go`'s dynamic invocation.
+- [x] **Try It UI**: Interactive web UI with environment selection, custom headers, request body editing, and response display.
+- [ ] **Security Hardening**: Enforce remaining security policies: CSRF protection on forms and audit logging. (Note: SSRF allowlist via environments, header allowlists, request size/timeout limits are already implemented.)
 
 ## Milestone 3: Streaming & Usability
 

@@ -1,0 +1,8 @@
+[tools]
+protoc = "latest"
+buf = "latest"
+go = "1.23"
+
+[env]
+# Ensure Go binaries in PATH for protoc plugins
+_.path = ["./bin", "$GOPATH/bin"]

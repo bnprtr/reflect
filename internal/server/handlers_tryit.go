@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/bnprtr/reflect/internal/tryit"
@@ -159,12 +160,18 @@ func (s *Server) handleTryItInvoke(w http.ResponseWriter, r *http.Request) {
 	case tryit.TransportGRPC:
 		invoker = tryit.NewGRPCInvoker()
 	case tryit.TransportGRPCWeb:
-		s.writeJSONError(w, http.StatusNotImplemented, "gRPC-Web transport is not yet implemented")
-		return
+		invoker = tryit.NewGRPCWebInvoker()
 	default:
 		s.writeJSONError(w, http.StatusBadRequest, fmt.Sprintf("unsupported transport: %s", parsedTransport))
 		return
 	}
+
+	// Log invocation start
+	slog.Info("Try It: Starting invocation",
+		"method", tryItReq.Method,
+		"transport", parsedTransport,
+		"environment", tryItReq.Environment,
+		"baseURL", env.BaseURL)
 
 	// Create context with timeout
 	ctx, cancel := context.WithTimeout(r.Context(), s.config.GetTimeout())
@@ -196,6 +203,22 @@ func (s *Server) handleTryItInvoke(w http.ResponseWriter, r *http.Request) {
 			Message: resp.Error.Message,
 			Details: resp.Error.Details,
 		}
+		// Log error response
+		slog.Error("Try It: Invocation failed",
+			"method", tryItReq.Method,
+			"transport", parsedTransport,
+			"environment", tryItReq.Environment,
+			"status", resp.Status,
+			"latencyMs", resp.Latency.Milliseconds(),
+			"error", resp.Error.Message)
+	} else {
+		// Log successful response
+		slog.Info("Try It: Invocation succeeded",
+			"method", tryItReq.Method,
+			"transport", parsedTransport,
+			"environment", tryItReq.Environment,
+			"status", resp.Status,
+			"latencyMs", resp.Latency.Milliseconds())
 	}
 
 	// Render response template

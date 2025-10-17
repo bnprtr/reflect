@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package echo.v1;
+
+option go_package = "github.com/bnprtr/reflect/examples/proto/echo/v1;echov1";
+
+// EchoService provides a simple echo service for testing Connect, gRPC, and gRPC-Web.
+service EchoService {
+  // Echo returns the same message that was sent.
+  rpc Echo(EchoRequest) returns (EchoResponse);
+
+  // EchoStream streams back the same message multiple times.
+  rpc EchoStream(EchoRequest) returns (stream EchoResponse);
+}
+
+// EchoRequest contains the message to echo.
+message EchoRequest {
+  // The message to echo back.
+  string message = 1;
+
+  // Optional count for streaming responses (default: 3).
+  int32 count = 2;
+}
+
+// EchoResponse contains the echoed message.
+message EchoResponse {
+  // The echoed message.
+  string message = 1;
+
+  // Timestamp when the echo was processed (Unix milliseconds).
+  int64 timestamp = 2;
+}

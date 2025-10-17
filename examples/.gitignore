@@ -1,0 +1,13 @@
+# Compiled binaries
+connect-server/connect-server
+grpc-server/grpc-server
+grpc-web-server/grpc-web-server
+
+# Go module cache
+**/go.sum
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
