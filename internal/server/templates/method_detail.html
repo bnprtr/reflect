@@ -136,15 +136,20 @@
 
             {{if .Method.ExampleRequest}}
               <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
-                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
                   <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Example Request</h2>
+                  <button
+                    onclick="copyCodeToClipboard(this, 'example-request-code')"
+                    class="inline-flex items-center px-3 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                    Copy
+                  </button>
                 </div>
                 <div class="px-6 py-4">
                   <div class="code-block">
-                    <button class="copy-btn" onclick="copyToClipboard(this)" data-clipboard-text="{{.Method.ExampleRequest}}">
-                      Copy
-                    </button>
-                    <pre><code class="language-json">{{.Method.ExampleRequest}}</code></pre>
+                    <pre><code class="language-json" id="example-request-code">{{.Method.ExampleRequest}}</code></pre>
                   </div>
                 </div>
               </div>
@@ -152,15 +157,20 @@
 
             {{if .Method.ExampleResponse}}
               <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 mb-6">
-                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
                   <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Example Response</h2>
+                  <button
+                    onclick="copyCodeToClipboard(this, 'example-response-code')"
+                    class="inline-flex items-center px-3 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                    Copy
+                  </button>
                 </div>
                 <div class="px-6 py-4">
                   <div class="code-block">
-                    <button class="copy-btn" onclick="copyToClipboard(this)" data-clipboard-text="{{.Method.ExampleResponse}}">
-                      Copy
-                    </button>
-                    <pre><code class="language-json">{{.Method.ExampleResponse}}</code></pre>
+                    <pre><code class="language-json" id="example-response-code">{{.Method.ExampleResponse}}</code></pre>
                   </div>
                 </div>
               </div>
@@ -169,30 +179,40 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
               {{if .Method.Examples.Curl}}
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-                  <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                  <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
                     <h2 class="text-lg font-semibold text-gray-900 dark:text-white">cURL Example</h2>
+                    <button
+                      onclick="copyCodeToClipboard(this, 'curl-example-code')"
+                      class="inline-flex items-center px-3 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200">
+                      <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                      </svg>
+                      Copy
+                    </button>
                   </div>
                   <div class="px-6 py-4">
                     <div class="code-block">
-                      <button class="copy-btn" onclick="copyToClipboard(this)" data-clipboard-text="{{.Method.Examples.Curl}}">
-                        Copy
-                      </button>
-                      <pre><code>{{.Method.Examples.Curl}}</code></pre>
+                      <pre><code id="curl-example-code">{{.Method.Examples.Curl}}</code></pre>
                     </div>
                   </div>
                 </div>
               {{end}}
 
               <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
                   <h2 class="text-lg font-semibold text-gray-900 dark:text-white">gRPC Example</h2>
+                  <button
+                    onclick="copyCodeToClipboard(this, 'grpc-example-code')"
+                    class="inline-flex items-center px-3 py-1 text-xs font-medium text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors duration-200">
+                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                    Copy
+                  </button>
                 </div>
                 <div class="px-6 py-4">
                   <div class="code-block">
-                    <button class="copy-btn" onclick="copyToClipboard(this)" data-clipboard-text="{{.Method.Examples.Grpcurl}}">
-                      Copy
-                    </button>
-                    <pre><code>{{.Method.Examples.Grpcurl}}</code></pre>
+                    <pre><code id="grpc-example-code">{{.Method.Examples.Grpcurl}}</code></pre>
                   </div>
                 </div>
               </div>
@@ -225,15 +245,19 @@
     </div>
 
     <script>
-    function copyToClipboard(button) {
-      const text = button.getAttribute('data-clipboard-text');
+    function copyCodeToClipboard(button, codeElementId) {
+      const codeElement = document.getElementById(codeElementId);
+      if (!codeElement) {
+        console.error('Code element not found: ' + codeElementId);
+        return;
+      }
+
+      const text = codeElement.textContent;
       navigator.clipboard.writeText(text).then(function() {
-        const originalText = button.textContent;
-        button.textContent = 'Copied!';
-        button.classList.add('bg-green-200', 'dark:bg-green-800');
+        const originalHTML = button.innerHTML;
+        button.innerHTML = '<svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20"><path d="M16 10c0 .553-.447 1-1 1H4c-.553 0-1-.447-1-1s.447-1 1-1h11c.553 0 1 .447 1 1z" fill-rule="evenodd"></path><path d="M10 3c-3.866 0-7 3.134-7 7s3.134 7 7 7 7-3.134 7-7-3.134-7-7-7zm3.707 7.707l-2.414 2.414a1 1 0 11-1.414-1.414l2.828-2.828a1 1 0 011.414 0l2.828 2.828a1 1 0 11-1.414 1.414L13.707 10.293z" fill-rule="evenodd"></path></svg>Copied!';
         setTimeout(function() {
-          button.textContent = originalText;
-          button.classList.remove('bg-green-200', 'dark:bg-green-800');
+          button.innerHTML = originalHTML;
         }, 2000);
       }).catch(function(err) {
         console.error('Failed to copy text: ', err);
